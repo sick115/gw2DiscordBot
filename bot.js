@@ -125,7 +125,6 @@ client.on("message", async (message) => {
             if (err) throw err;
             console.log("insert worked!")
         });
-        // 4E2A7193-3D3C-344A-8B25-30F80A1EE61EF351CCF3-6BF0-41FA-B459-5E219A9F70EE
     }
 
     if (message.content.startsWith("!check")) {
@@ -235,24 +234,6 @@ const fetchBulk = async (api) => {
         return e.message
     }
 }
-// function checkWorlds(worldCheck){
-//     var url = 'https://api.guildwars2.com/v2/account?access_token='
-//     var info;
-//     fetch(url + worldCheck)
-//         .then(response => {
-//             response.json().then(json => {
-//                 info = json
-//
-//                 if (info.world === 1003) {
-//                     return message.channel.send("Yb native!")
-//
-//                 } else {
-//                     return message.channel.send("kill it!")
-//                 }
-//             })
-//         })
-// }
+
 client.login(config.token);
 
-
-// https://api.guildwars2.com/v2/account?access_token=4E2A7193-3D3C-344A-8B25-30F80A1EE61EF351CCF3-6BF0-41FA-B459-5E219A9F70EE
