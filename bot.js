@@ -173,7 +173,6 @@ client.on("message", async (message) => {
         var roles = message.guild.roles
 
         // var verifiedRole = roles.find((item) => item.name === "Verified")
-        let verifiedRole = message.guild.roles.find("name", "Verified");
 
 
         for(let i =0; i< result.length; i++){
@@ -184,6 +183,7 @@ client.on("message", async (message) => {
             //get users from db
             // let userToModify = client.users.get(result[i].user_id)
             let userToModify = client.guilds.get("476902310581239810").members.get(result[i].user_id)
+            let verifiedRole = message.guild.roles.find("name", "Verified");
 
                 if (worldCheck.world === 1003) {
                     ybCount++
