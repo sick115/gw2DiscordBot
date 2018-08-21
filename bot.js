@@ -185,16 +185,18 @@ client.on("message", async (message) => {
             // let userToModify = client.users.get(result[i].user_id)
             let userToModify = client.guilds.get("476902310581239810").members.get(result[i].user_id)
 
-            if(worldCheck.world === 1003){
-                ybCount++
-                userToModify.addRole(verifiedRole.id)
-            }else if(worldCheck.world === 1015){
-                linkCount++
-                userToModify.addRole(verifiedRole.id)
-            }else{
-                spyCount++
-                userToModify.removeRole(verifiedRole.id, "spy")
+            if(userToModify !== null) {
+                if (worldCheck.world === 1004) {
+                    ybCount++
+                    userToModify.addRole(verifiedRole.id)
+                } else if (worldCheck.world === 1015) {
+                    linkCount++
+                    userToModify.addRole(verifiedRole.id)
+                } else {
+                    spyCount++
+                    userToModify.removeRole(verifiedRole.id, "spy")
 
+                }
             }
         }
 
