@@ -202,7 +202,7 @@ client.on("message", async (message) => {
                 } else {
                     spyCount++
                     try {
-                        if(verifiedRole.id != undefined) {
+                        if(verifiedRole != undefined) {
                             await  userToModify.removeRole(verifiedRole.id)
                         }
                     }catch(e){
