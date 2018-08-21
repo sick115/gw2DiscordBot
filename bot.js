@@ -194,8 +194,11 @@ client.on("message", async (message) => {
                     userToModify.addRole(verifiedRole.id)
                 } else {
                     spyCount++
-                    userToModify.removeRole(verifiedRole.id, "spy")
-
+                    try {
+                        userToModify.removeRole(verifiedRole.id, "spy")
+                    }catch(e){
+                        console.log(e)
+                    }
                 }
             }
         }
