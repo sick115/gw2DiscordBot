@@ -114,10 +114,9 @@ client.on("message", async (message) => {
         storeAPI = message.content;
         editedAPI = storeAPI.replace('$key add ', '')
 
-        message.author.send('UserId: ' + userId + "\n" + "Your API:" + editedAPI)
         let value = await fetchUsers(editedAPI)
 
-        if(value != false) {
+        if(value.text !== 'invalid key') {
             var values = {
                 user_id: userId,
                 api_key: editedAPI
@@ -127,6 +126,7 @@ client.on("message", async (message) => {
                 if (err) throw err;
                 console.log("insert worked!")
             });
+            message.author.send('UserId: ' + userId + "\n" + "Your API:" + editedAPI)
         }
         message.author.send("Bad API key, try again!")
     }
