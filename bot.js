@@ -185,7 +185,7 @@ client.on("message", async (message) => {
             // let userToModify = client.users.get(result[i].user_id)
             let userToModify = client.guilds.get("476902310581239810").members.get(result[i].user_id)
 
-                if (worldCheck.world === 1004) {
+                if (worldCheck.world === 1003) {
                     ybCount++
                     userToModify.addRole(verifiedRole.id)
                 } else if (worldCheck.world === 1015) {
