@@ -187,14 +187,22 @@ client.on("message", async (message) => {
 
                 if (worldCheck.world === 1003) {
                     ybCount++
-                    userToModify.addRole(verifiedRole.id)
+                    try {
+                   await userToModify.addRole(verifiedRole.id)
+                    }catch(e){
+                        console.log(e)
+                    }
                 } else if (worldCheck.world === 1015) {
                     linkCount++
-                    userToModify.addRole(verifiedRole.id)
+                    try {
+                       await userToModify.addRole(verifiedRole.id)
+                    }catch(e){
+                        console.log(e)
+                    }
                 } else {
                     spyCount++
                     try {
-                        userToModify.removeRole(verifiedRole.id, "spy")
+                      await  userToModify.removeRole(verifiedRole.id, "spy")
                     }catch(e){
                         console.log(e)
                     }
