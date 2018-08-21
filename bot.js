@@ -115,16 +115,20 @@ client.on("message", async (message) => {
         editedAPI = storeAPI.replace('$key add ', '')
 
         message.author.send('UserId: ' + userId + "\n" + "Your API:" + editedAPI)
+        let value = await fetchUsers(editedAPI)
 
-        var values = {
-            user_id: userId,
-            api_key: editedAPI
+        if(value != false) {
+            var values = {
+                user_id: userId,
+                api_key: editedAPI
+            }
+            var sql = "INSERT INTO yaksbenddb SET ?"
+            pool.query(sql, values, function (err) {
+                if (err) throw err;
+                console.log("insert worked!")
+            });
         }
-        var sql = "INSERT INTO yaksbenddb SET ?"
-        pool.query(sql, values, function (err) {
-            if (err) throw err;
-            console.log("insert worked!")
-        });
+        message.author.send("Bad API key, try again!")
     }
 
     if (message.content.startsWith("!check")) {
@@ -231,7 +235,7 @@ try {
     worldCheck = await response.json()
     return worldCheck
     }catch(e){
-        return e.message
+        return false
     }
     // worldCheck[i].api_key
 }
