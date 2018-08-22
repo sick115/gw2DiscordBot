@@ -121,7 +121,7 @@ client.on("message", async (message) => {
                 user_id: userId,
                 api_key: editedAPI
             }
-            var sql = "INSERT INTO yaksbenddb SET ?"
+            var sql = "INSERT INTO yaksbenddb SET ? ON DUPLICATE KEY UPDATE api_key = VALUES(api_key)"
             pool.query(sql, values, function (err) {
                 if (err) throw err;
                 console.log("insert worked!")
