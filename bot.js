@@ -127,8 +127,10 @@ client.on("message", async (message) => {
                 result = await pool.query(sql, values)
                 message.channel.send("You've been added to the DB!")
                 message.author.send('Your discord User Id: ' + userId + "\n" + "Your API:" + editedAPI)
-            } catch {
+            } catch (err){
                 message.author.send("Bad API key, try again!")
+                throw new Error(err)
+
             }
 
 
