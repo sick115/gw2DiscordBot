@@ -116,19 +116,31 @@ client.on("message", async (message) => {
 
         let value = await fetchUsers(editedAPI)
 
+        let result;
         if (value.text !== 'invalid key') {
             var values = {
                 user_id: userId,
                 api_key: editedAPI
             }
             var sql = "INSERT INTO yaksbenddb SET ? ON DUPLICATE KEY UPDATE api_key = VALUES(api_key)"
-            pool.query(sql, values, function (err) {
-                if (err) throw err;
-                console.log("insert worked!")
-            });
-            message.author.send('UserId: ' + userId + "\n" + "Your API:" + editedAPI)
-        } else {
-            message.author.send("Bad API key, try again!")
+            try {
+                result = await pool.query(sql, values)
+                message.channel.send("You've been added to the DB!")
+                message.author.send('Your discord User Id: ' + userId + "\n" + "Your API:" + editedAPI)
+            } catch {
+                message.author.send("Bad API key, try again!")
+            }
+
+
+            let userToModify = client.guilds.get("476902310581239810").members.get(values.user_id)
+            let verifiedRole = message.guild.roles.find("name", "Verified");
+
+            if(worldCheck.world === 1003 || worldCheck.world === 1015){
+                await userToModify.addRole(verifiedRole.id)
+                message.channel.send("You've been verified!")
+            }else{
+                message.channel.send("You do not belong to YB or IOJ")
+            }
         }
     }
 
@@ -190,6 +202,8 @@ client.on("message", async (message) => {
             let userToModify = client.guilds.get("476902310581239810").members.get(result[i].user_id)
             let verifiedRole = message.guild.roles.find("name", "Verified");
 
+
+            //numbers will need to be changed for cooresponding servers
                 if (worldCheck.world === 1003) {
                     ybCount++
                     try {
