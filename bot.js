@@ -40,7 +40,11 @@ client.on("message", async (message) => {
 
 
     if (message.content.startsWith("!commands")) {
-        message.channel.send("Commands currently: \n !register - FOR API VERIFICATION \n !users \n !serverStatus \n !wvw ");
+        message.channel.send("Commands currently: " +
+            "\n !users " +
+            "\n !serverStatus " +
+            "\n !wvw " +
+            "\n !serverList");
         message.channel.send("Registered Commands: \n !check");
 
     }
@@ -48,18 +52,32 @@ client.on("message", async (message) => {
     var users = client.users;
 
     if (message.content.startsWith("!users")) {
-        // message.channel.send(client.users.array())
-        message.channel.send('Total users:' + users.size)
-        //show verified role
-        let verifiedMembersCount = message.guild.members
-        let convertMapToArray = [...verifiedMembersCount]
-        let verifiedCount = 0;
-        for (let i = 0; i < convertMapToArray.length; i++) {
-            if (convertMapToArray[i][1]._roles[0] === "477947826442338324") {
-                verifiedCount++
+        // // message.channel.send(client.users.array())
+        // message.channel.send('Total users:' + users.size)
+        // //show verified role
+        // let verifiedMembersCount = message.guild.members
+        // let convertMapToArray = [...verifiedMembersCount]
+        // let verifiedCount = 0;
+        // for (let i = 0; i < convertMapToArray.length; i++) {
+        //     if (convertMapToArray[i][1]._roles[i] === "477947826442338324") {
+        //         verifiedCount++
+        //     }
+        // }
+        // message.channel.send('Total verified:' + verifiedCount)
+
+        let totalMembers = [...message.guild.members]
+        let verifiedMembers = 0;
+
+        for(let i = 0; i< totalMembers.length; i++){
+            if(totalMembers[i][1].roles.has("477947826442338324")){
+                verifiedMembers++
             }
         }
-        message.channel.send('Total verified:' + verifiedCount)
+
+         message.channel.send(
+             'Total Members:' + totalMembers.length + '\n' +
+         'Verified Members: ' + verifiedMembers);
+
 
     }
 
@@ -169,8 +187,8 @@ client.on("message", async (message) => {
 
         if(worldCheck.world === 1003){
             message.channel.send("Yb Native")
-        }else if(worldCheck.world === 1015){
-            message.channel.send("IOJ Native")
+        }else if(worldCheck.world === 1010){
+            message.channel.send("EBay Native")
         }else{
             message.channel.send("Spy")
         }
@@ -213,7 +231,7 @@ client.on("message", async (message) => {
                     }catch(e){
                         console.log(e)
                     }
-                } else if (worldCheck.world === 1015) {
+                } else if (worldCheck.world === 1010) {
                     linkCount++
                     try {
                        await userToModify.addRole(verifiedRole.id)
@@ -233,12 +251,28 @@ client.on("message", async (message) => {
         }
 
         message.channel.send("YB Count: " + ybCount)
-        message.channel.send("IOJ Count: " + linkCount)
+        message.channel.send("EBay Count: " + linkCount)
         message.channel.send("Spy Count: " + spyCount)
 
         ybCount = 0;
         linkCount = 0;
         spyCount = 0;
+    }
+
+    if(message.content.startsWith("!serverList")){
+        await overView()
+
+        for(let i = 0; i<worldCheck.length; i++) {
+            let serverId = worldCheck[i].id
+            let serverName = worldCheck[i].name
+            let serverPop = worldCheck[i].population
+
+            if(parseInt(worldCheck[i].id) >= 1001 && parseInt(worldCheck[i].id) <= 1024 ) {
+                message.channel.send('Server Id: ' + serverId + '\n Server Name: '
+                    + serverName + '\n Server Population: ' + serverPop)
+            }
+
+        }
     }
 
 
@@ -262,6 +296,17 @@ const fetchBulk = async (api) => {
     var url = 'https://api.guildwars2.com/v2/account?access_token='
     try{
         let response = await fetch(url + api)
+        worldCheck = await response.json()
+        return worldCheck
+    }catch(e){
+        return e.message
+    }
+}
+
+const overView = async (api) => {
+    var url = 'https://api.guildwars2.com/v2/worlds?ids=all'
+    try {
+        let response = await fetch(url)
         worldCheck = await response.json()
         return worldCheck
     }catch(e){
