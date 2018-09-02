@@ -52,18 +52,7 @@ client.on("message", async (message) => {
     var users = client.users;
 
     if (message.content.startsWith("!users")) {
-        // // message.channel.send(client.users.array())
-        // message.channel.send('Total users:' + users.size)
-        // //show verified role
-        // let verifiedMembersCount = message.guild.members
-        // let convertMapToArray = [...verifiedMembersCount]
-        // let verifiedCount = 0;
-        // for (let i = 0; i < convertMapToArray.length; i++) {
-        //     if (convertMapToArray[i][1]._roles[i] === "477947826442338324") {
-        //         verifiedCount++
-        //     }
-        // }
-        // message.channel.send('Total verified:' + verifiedCount)
+
 
         let totalMembers = [...message.guild.members]
         let verifiedMembers = 0;
@@ -155,11 +144,12 @@ client.on("message", async (message) => {
             let userToModify = client.guilds.get("476902310581239810").members.get(values.user_id)
             let verifiedRole = message.guild.roles.find("name", "Verified");
 
-            if(worldCheck.world === 1003 || worldCheck.world === 1015){
+            //TODO THIS NEEDS TO CHANGE ALL THE TIME
+            if(worldCheck.world === 1003 || worldCheck.world === 1010){
                 await userToModify.addRole(verifiedRole.id)
                 message.channel.send("You've been verified!")
             }else{
-                message.channel.send("You do not belong to YB or IOJ")
+                message.channel.send("You do not belong to YB or Ebay")
             }
         }
     }
