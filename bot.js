@@ -51,6 +51,20 @@ client.on("message", async (message) => {
 
     var users = client.users;
 
+    if(message.channel.id === "481688120215994378"){
+
+        let userId = message.author.id;
+        let userToModify = client.guilds.get("476902310581239810").members.get(userId)
+
+        if(userToModify.roles.has("477947826442338324")){
+
+        }else{
+            message.channel.send("Looks like you are not verified, please type \n $key add [API KEY HERE WITHOUT BRACKETS]")
+        }
+
+
+    }
+
     if (message.content.startsWith("!users")) {
 
 
