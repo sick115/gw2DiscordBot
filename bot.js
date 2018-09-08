@@ -286,17 +286,6 @@ client.on("message", async (message) => {
         userId = message.author.id;
 
 
-        // var sql = "SELECT * FROM yaksbenddb WHERE `user_id` = ?"
-        // var result;
-        // try {
-        //     //gets one result back
-        //     result = await pool.query(sql, [userId])
-        // } catch (err) {
-        //     throw new Error(err)
-        // }
-
-
-        //let sql = "SELECT * FROM yaksbenddb WHERE user_id =" + userId
         let sql = "SELECT * FROM yaksbenddb where user_id = ?"
         let result;
 
@@ -306,9 +295,13 @@ client.on("message", async (message) => {
             throw new Error(err)
         }
 
-        await wvwKills(result[0].api_key)
+        try {
+            await wvwKills(result[0].api_key)
+            message.channel.send('Your kill total is: ' + wvwPKills.current);
+        }catch(e){
+            message.channel.send('You need to give more API access on your account');
 
-        message.channel.send('Your kill total is: ' + wvwPKills.current)
+        }
     }
 
 });
