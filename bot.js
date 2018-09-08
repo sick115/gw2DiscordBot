@@ -4,6 +4,7 @@ const fetch = require('node-fetch')
 
 var pool = require('./database')
 var worldCheck = [];
+var wvwPKills = []
 var ybCount = 0;
 var linkCount = 0;
 var spyCount = 0;
@@ -279,6 +280,36 @@ client.on("message", async (message) => {
         }
     }
 
+    if(message.content.startsWith("!kills")){
+        let userId;
+
+        userId = message.author.id;
+
+
+        // var sql = "SELECT * FROM yaksbenddb WHERE `user_id` = ?"
+        // var result;
+        // try {
+        //     //gets one result back
+        //     result = await pool.query(sql, [userId])
+        // } catch (err) {
+        //     throw new Error(err)
+        // }
+
+
+        //let sql = "SELECT * FROM yaksbenddb WHERE user_id =" + userId
+        let sql = "SELECT * FROM yaksbenddb where user_id = ?"
+        let result;
+
+        try{
+            result = await pool.query(sql, [userId])
+        } catch(err){
+            throw new Error(err)
+        }
+
+        await wvwKills(result[0].api_key)
+
+        message.channel.send('Your kill total is: ' + wvwPKills.current)
+    }
 
 });
 
@@ -307,7 +338,7 @@ const fetchBulk = async (api) => {
     }
 }
 
-const overView = async (api) => {
+const overView = async () => {
     var url = 'https://api.guildwars2.com/v2/worlds?ids=all'
     try {
         let response = await fetch(url)
@@ -318,5 +349,18 @@ const overView = async (api) => {
     }
 }
 
+const wvwKills = async (api) => {
+    var url = 'https://api.guildwars2.com/v2/account/achievements?access_token='+api+'&id=283'
+
+    try {
+        let response = await fetch(url)
+        wvwPKills = await response.json()
+        return wvwPKills
+    }catch(e){
+        return e.message
+    }
+}
+
 client.login(config.token);
 
+//issue with DB connetion - its not on... turn on so you can hit.
