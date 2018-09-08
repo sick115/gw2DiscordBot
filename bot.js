@@ -297,9 +297,13 @@ client.on("message", async (message) => {
 
         try {
             await wvwKills(result[0].api_key)
-            message.channel.send('Your kill total is: ' + wvwPKills.current);
+            if(wvwPKills.current == undefined){
+                message.channel.send('Your need to give more API access');
+            }else {
+                message.channel.send('Your kill total is: ' + wvwPKills.current);
+            }
         }catch(e){
-            message.channel.send('You need to give more API access on your account');
+            message.channel.send('You need to verify for this.');
 
         }
     }
