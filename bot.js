@@ -144,7 +144,7 @@ client.on("message", async (message) => {
                 user_id: userId,
                 api_key: editedAPI
             }
-            var sql = "INSERT INTO yaksbenddb SET ? ON DUPLICATE KEY UPDATE api_key = VALUES(api_key)"
+            var sql = "INSERT INTO users SET ? ON DUPLICATE KEY UPDATE api_key = VALUES(api_key)"
             try {
                 result = await pool.query(sql, values)
                 message.channel.send("You've been added to the DB!")
@@ -179,7 +179,7 @@ client.on("message", async (message) => {
 
         userId = message.author.id;
 
-        var sql = "SELECT * FROM yaksbenddb WHERE `user_id` = ?"
+        var sql = "SELECT * FROM users WHERE `user_id` = ?"
         var result;
         try {
             //gets one result back
@@ -202,7 +202,7 @@ client.on("message", async (message) => {
     if (message.content.startsWith("!purge")) {
 
 
-        var sql = "SELECT * FROM yaksbenddb"
+        var sql = "SELECT * FROM users"
         var result;
         try {
             //gets one result back
@@ -286,7 +286,7 @@ client.on("message", async (message) => {
         userId = message.author.id;
 
 
-        let sql = "SELECT * FROM yaksbenddb where user_id = ?"
+        let sql = "SELECT * FROM users where user_id = ?"
         let result;
 
         try{
@@ -299,7 +299,7 @@ client.on("message", async (message) => {
             await wvwKills(result[0].api_key)
             let apiHolder = result[0].api_key
             if(wvwPKills.current == undefined){
-                message.channel.send('Your need to give more API access');
+                message.channel.send('You need to give more API access');
             }else {
                 let killSql = "INSERT INTO kills SET ? ON DUPLICATE KEY UPDATE api_key = VALUES(api_key)"
 
