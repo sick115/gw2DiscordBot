@@ -301,25 +301,24 @@ client.on("message", async (message) => {
             if(wvwPKills.current == undefined){
                 message.channel.send('You need to give more API access');
             }else {
-                let killSql = "INSERT INTO kills SET ? ON DUPLICATE KEY UPDATE api_key = VALUES(api_key)"
+                let killSql = "UPDATE users SET wvwkills = ? WHERE user_id = ?"
 
-                let killLoad = {
-                    api_key: apiHolder,
-                    user_id: userId,
-                    prev_count: wvwPKills.current,
-                }
-                await pool.query(killSql, killLoad);
+                let killLoad = [
+                    wvwkills = wvwPKills.current,
+                    user_id = userId
+                ]
+                await pool.query(killSql, killLoad)
 
                 message.channel.send('Your kill total is: ' + wvwPKills.current);
 
-                let sql = "SELECT * from kills where user_id = ?"
+                let sql = "SELECT wvwkills FROM users WHERE user_id = ?"
                 let result;
                 try{
                     result = await pool.query(sql, [userId])
                 } catch(err){
                     throw new Error(err)
                 }
-                message.channel.send('Your past kill total is: ' + result[0].prev_count);
+                message.channel.send('Your past kill total is: ' + result[0].wvwkills);
 
 
             }
