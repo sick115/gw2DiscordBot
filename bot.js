@@ -310,7 +310,7 @@ client.on("message", async (message) => {
 
                 try{
                     result = await pool.query(sql, [userId])
-                    if(result) {
+                    if(result !== null) {
                         message.channel.send('Your past kill total is: ' + result[0].wvwkills);
                     }else{
                         message.channel.send('Since this is your first time running !kills, we\'ve stored your current kill count. Come back later and try again to see your new kill count!');
