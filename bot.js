@@ -301,6 +301,20 @@ client.on("message", async (message) => {
             if(wvwPKills.current == undefined){
                 message.channel.send('You need to give more API access');
             }else {
+
+
+                message.channel.send('Your kill total is: ' + wvwPKills.current);
+
+                let sql = "SELECT wvwkills FROM users WHERE user_id = ?"
+                let result;
+
+                try{
+                    result = await pool.query(sql, [userId])
+                    message.channel.send('Your past kill total is: ' + result[0].wvwkills);
+                } catch(err){
+                    message.channel.send('You have no past kills logged');
+                }
+
                 let killSql = "UPDATE users SET wvwkills = ? WHERE user_id = ?"
 
                 let killLoad = [
@@ -308,18 +322,6 @@ client.on("message", async (message) => {
                     user_id = userId
                 ]
                 await pool.query(killSql, killLoad)
-
-                message.channel.send('Your kill total is: ' + wvwPKills.current);
-
-                let sql = "SELECT wvwkills FROM users WHERE user_id = ?"
-                let result;
-                try{
-                    result = await pool.query(sql, [userId])
-                } catch(err){
-                    throw new Error(err)
-                }
-                message.channel.send('Your past kill total is: ' + result[0].wvwkills);
-
 
             }
         }catch(e){
