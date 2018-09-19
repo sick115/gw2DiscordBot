@@ -301,17 +301,18 @@ client.on("message", async (message) => {
             if(wvwPKills.current == undefined){
                 message.channel.send('You need to give more API access');
             }else {
-
-
                 message.channel.send('Your kill total is: ' + wvwPKills.current);
 
                 let sql = "SELECT wvwkills FROM users WHERE user_id = ?"
                 let result;
 
+
                 try{
                     result = await pool.query(sql, [userId])
+                    let killDiff = wvwPKills.current - result[0].wvwkills
+
                     if(result[0].wvwkills !== null) {
-                        message.channel.send('Your past kill total is: ' + result[0].wvwkills);
+                        message.channel.send('Your past kill total is: ' + result[0].wvwkills + '\nYour kill difference is: '+ killDiff);
                     }else{
                         message.channel.send('Since this is your first time running !kills, we\'ve stored your current kill count. Come back later and try again to see your new kill count!');
                     }
