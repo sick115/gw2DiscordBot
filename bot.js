@@ -9,6 +9,8 @@ var ybCount = 0;
 var linkCount = 0;
 var spyCount = 0;
 
+var yaksBendServerID = 1003
+
 
 
 // This is your client. Some people call it `bot`, some people call it `self`,
@@ -44,10 +46,10 @@ client.on("message", async (message) => {
         message.channel.send("Commands currently: " +
             "\n !users " +
             "\n !serverStatus " +
-            "\n !wvw " +
-            "\n !serverList");
-        message.channel.send("Registered Commands: \n !check");
-
+            "\n !kda " +
+            "\n !score " +
+            "\n !kills " +
+            "\n !check ");
     }
 
     var users = client.users;
@@ -100,7 +102,7 @@ client.on("message", async (message) => {
             });
     }
 
-    if (message.content.startsWith("!wvw")) {
+    if (message.content.startsWith("!kda")) {
         var url = 'https://api.guildwars2.com/v2/wvw/matches/stats?world=1003'
         var info
         var redKda;
@@ -280,6 +282,26 @@ client.on("message", async (message) => {
         }
     }
 
+    if(message.content.startsWith("!score")){
+        let wvwScore = await score()
+
+
+        let redScore;
+        let blueScore;
+        let greenScore;
+
+        redScore = wvwScore.scores.red
+        blueScore = wvwScore.scores.blue
+        greenScore = wvwScore.scores.green
+
+
+        message.channel.send('Red Score: ' + redScore + '\n' +
+            'Blue Score: ' + blueScore + '\n' + 'Green Score: ' + greenScore
+        )
+
+
+    }
+
     if(message.content.startsWith("!kills")){
         let userId;
 
@@ -382,6 +404,17 @@ const wvwKills = async (api) => {
     }catch(e){
         return e.message
     }
+}
+
+const score = async () => {
+    var url = 'https://api.guildwars2.com/v2/wvw/matches/scores?world=' + yaksBendServerID
+    let wvwScores
+
+    let response = await fetch(url)
+    wvwScores = await response.json()
+    return wvwScores
+
+
 }
 
 client.login(config.token);
