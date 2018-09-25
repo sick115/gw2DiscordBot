@@ -125,11 +125,6 @@ client.on("message", async (message) => {
             })
     }
 
-
-    if (message.content.startsWith("!register")) {
-        message.author.send("Register your API by typing !k API HERE")
-    }
-
     if (message.content.startsWith("$key add")) {
         var storeAPI;
         var editedAPI;
@@ -286,20 +281,35 @@ client.on("message", async (message) => {
         let wvwScore = await score()
 
 
+        //total scores
         let redScore;
         let blueScore;
         let greenScore;
+        redScore = wvwScore.scores.red;
+        blueScore = wvwScore.scores.blue;
+        greenScore = wvwScore.scores.green;
 
-        redScore = wvwScore.scores.red
-        blueScore = wvwScore.scores.blue
-        greenScore = wvwScore.scores.green
+
+        //total skirm points
+        let redSkirm;
+        let blueSkirm;
+        let greenSkirm;
+        redSkirm = wvwScore.victory_points.red;
+        blueSkirm = wvwScore.victory_points.blue;
+        greenSkirm = wvwScore.victory_points.green;
 
 
-        message.channel.send('Red Score: ' + redScore + '\n' +
-            'Blue Score: ' + blueScore + '\n' + 'Green Score: ' + greenScore
+        message.channel.send(
+            'Total WVW Scores ----> '+ '\n' +
+            'Red Score: ' + redScore + '\n' +
+            'Blue Score: ' + blueScore + '\n' +
+            'Green Score: ' + greenScore + '\n' +
+
+            'Total Skirmish Scores ---->' + '\n' +
+            'Red Skirmish Total: ' + redSkirm + '\n' +
+            'Blue Skirmish Total: ' + blueSkirm + '\n' +
+            'Green Skirmish Total: ' + greenSkirm + '\n'
         )
-
-
     }
 
     if(message.content.startsWith("!kills")){
