@@ -403,6 +403,9 @@ client.on("message", async (message) => {
 
                 message.channel.send('Account Name: ' + sorted[i].name + ' Kill Count: ' + sorted[i].wvwkills)
 
+            if(i === 9){
+                    return;
+            }
         }
 
     }
