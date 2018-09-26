@@ -3,6 +3,9 @@ const Discord = require("discord.js");
 const fetch = require('node-fetch')
 
 var pool = require('./database')
+
+
+
 var worldCheck = [];
 var wvwPKills = []
 var ybCount = 0;
@@ -366,7 +369,67 @@ client.on("message", async (message) => {
         }
     }
 
+    if(message.content.startsWith("test")){
+        let sql = "SELECT * FROM users"
+        let result;
+
+        result = await pool.query(sql)
+        console.log(result)
+
+        //create leaderboard
+
+        let storeUserInfo = result.map(({api_key, wvwkills}) => ({api_key, wvwkills}));
+
+        let accounts = []
+
+        for(let i=0; i<storeUserInfo.length; i++ ) {
+            let holder = (await fetchAccounts(storeUserInfo[i].api_key))
+
+            storeUserInfo[i]["name"] = holder.name
+        }
+
+
+        let onlykills = storeUserInfo.filter( user => {
+            if(user.wvwkills !== null){
+                return user;
+            }
+        })
+        let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? 1 : ((b.wvwkills > a.wvwkills) ? -1 : 0));
+
+
+
+        message.channel.send('Current top 10 in WVW Kills!')
+        for(let i=0; i<9; i++){
+            message.channel.send('Account Name: ' + sorted[i].name + ' Kill Count: ' + sorted[i].wvwkills)
+        }
+
+    }
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+//api calls
+const fetchAccounts = async (api) =>{
+    var url = 'https://api.guildwars2.com/v2/account?access_token='
+    try {
+        let response = await fetch(url + api)
+        response = await response.json()
+        return response
+    }catch(e){
+        return false
+    }
+    // worldCheck[i].api_key
+}
 
 
 const fetchUsers = async (api) =>{
