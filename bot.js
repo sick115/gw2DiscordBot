@@ -369,7 +369,7 @@ client.on("message", async (message) => {
         }
     }
 
-    if(message.content.startsWith("test")){
+    if(message.content.startsWith("!leaderboard")){
         let sql = "SELECT * FROM users"
         let result;
 
@@ -377,6 +377,8 @@ client.on("message", async (message) => {
         console.log(result)
 
         //create leaderboard
+
+        message.channel.send('Processing your request...')
 
         let storeUserInfo = result.map(({api_key, wvwkills}) => ({api_key, wvwkills}));
 
@@ -394,13 +396,13 @@ client.on("message", async (message) => {
                 return user;
             }
         })
-        let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? 1 : ((b.wvwkills > a.wvwkills) ? -1 : 0));
-
-
+        let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? -1 : ((b.wvwkills > a.wvwkills) ? 1 : 0));
 
         message.channel.send('Current top 10 in WVW Kills!')
-        for(let i=0; i<9; i++){
-            message.channel.send('Account Name: ' + sorted[i].name + ' Kill Count: ' + sorted[i].wvwkills)
+        for(let i=0; i<sorted.length; i++){
+
+                message.channel.send('Account Name: ' + sorted[i].name + ' Kill Count: ' + sorted[i].wvwkills)
+
         }
 
     }
