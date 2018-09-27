@@ -370,7 +370,7 @@ client.on("message", async (message) => {
     }
 
     if(message.content.startsWith("!leaderboard")){
-        let sql = "SELECT * FROM users"
+        let sql = "select * from users where wvwkills is not null order by wvwkills asc limit 10"
         let result;
 
         result = await pool.query(sql)
@@ -389,21 +389,21 @@ client.on("message", async (message) => {
         }
 
 
-        let onlykills = storeUserInfo.filter( user => {
-            if(user.wvwkills !== null){
-                return user;
-            }
-        })
-        let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? -1 : ((b.wvwkills > a.wvwkills) ? 1 : 0));
-        let top10;
-
-        if(sorted.length > 10){
-            top10 = sorted.splice(10)
-        }
+        // let onlykills = storeUserInfo.filter( user => {
+        //     if(user.wvwkills !== null){
+        //         return user;
+        //     }
+        // })
+        // let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? -1 : ((b.wvwkills > a.wvwkills) ? 1 : 0));
+        // let top10;
+        //
+        // if(sorted.length > 10){
+        //     top10 = sorted.splice(10)
+        // }
 
         message.channel.send('Current top 10 in WVW Kills!')
-        for(let i=0; i<top10.length; i++){
-            message.channel.send('Account Name: ' + sorted[i].name + ' Kill Count: ' + sorted[i].wvwkills)
+        for(let i=0; i<storeUserInfo.length; i++){
+            message.channel.send('Account Name: ' + storeUserInfo[i].name + ' Kill Count: ' + storeUserInfo[i].wvwkills)
         }
 
     }
