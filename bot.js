@@ -397,15 +397,15 @@ client.on("message", async (message) => {
             }
         })
         let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? -1 : ((b.wvwkills > a.wvwkills) ? 1 : 0));
+        let top10;
+
+        if(sorted.length > 9){
+            top10 = sorted.splice(9)
+        }
 
         message.channel.send('Current top 10 in WVW Kills!')
-        for(let i=0; i<sorted.length; i++){
-
-                message.channel.send('Account Name: ' + sorted[i].name + ' Kill Count: ' + sorted[i].wvwkills)
-
-            if(i === 9){
-                    return;
-            }
+        for(let i=0; i<top10.length; i++){
+            message.channel.send('Account Name: ' + sorted[i].name + ' Kill Count: ' + sorted[i].wvwkills)
         }
 
     }
