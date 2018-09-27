@@ -382,10 +382,8 @@ client.on("message", async (message) => {
 
         let storeUserInfo = result.map(({api_key, wvwkills}) => ({api_key, wvwkills}));
 
-        let accounts = []
-
         for(let i=0; i<storeUserInfo.length; i++ ) {
-            let holder = (await fetchAccounts(storeUserInfo[i].api_key))
+            let holder = await fetchAccounts(storeUserInfo[i].api_key)
 
             storeUserInfo[i]["name"] = holder.name
         }
@@ -399,8 +397,8 @@ client.on("message", async (message) => {
         let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? -1 : ((b.wvwkills > a.wvwkills) ? 1 : 0));
         let top10;
 
-        if(sorted.length > 9){
-            top10 = sorted.splice(9)
+        if(sorted.length > 10){
+            top10 = sorted.splice(10)
         }
 
         message.channel.send('Current top 10 in WVW Kills!')
@@ -433,7 +431,6 @@ const fetchAccounts = async (api) =>{
     }catch(e){
         return false
     }
-    // worldCheck[i].api_key
 }
 
 
