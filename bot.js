@@ -370,7 +370,7 @@ client.on("message", async (message) => {
     }
 
     if(message.content.startsWith("!leaderboard")){
-        let sql = "select * from users where wvwkills is not null order by wvwkills asc limit 10"
+        let sql = "select * from users where wvwkills is not null order by wvwkills desc limit 10"
         let result;
 
         result = await pool.query(sql)
@@ -403,7 +403,7 @@ client.on("message", async (message) => {
 
         message.channel.send('Current top 10 in WVW Kills!')
         for(let i=0; i<storeUserInfo.length; i++){
-            message.channel.send('Account Name: ' + storeUserInfo[i].name + ' Kill Count: ' + storeUserInfo[i].wvwkills)
+            message.channel.send('Rank '+ (i+1)  +' Account Name: ' + storeUserInfo[i].name + ' Kill Count: ' + storeUserInfo[i].wvwkills)
         }
 
     }
