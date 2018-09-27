@@ -52,6 +52,7 @@ client.on("message", async (message) => {
             "\n !kda " +
             "\n !score " +
             "\n !kills " +
+            "\n !leaderboard " +
             "\n !check ");
     }
 
@@ -301,6 +302,17 @@ client.on("message", async (message) => {
         blueSkirm = wvwScore.victory_points.blue;
         greenSkirm = wvwScore.victory_points.green;
 
+        //current skirm
+        let currentRed;
+        let currentBlue;
+        let currentGreen;
+
+        let lastSkirm = wvwScore.skirmishes.pop()
+        currentRed = lastSkirm.scores.red
+        currentBlue = lastSkirm.scores.blue
+        currentGreen = lastSkirm.scores.green
+
+
 
         message.channel.send(
             'Total WVW Scores ----> '+ '\n' +
@@ -308,10 +320,15 @@ client.on("message", async (message) => {
             'Blue Score: ' + blueScore + '\n' +
             'Green Score: ' + greenScore + '\n' +
 
-            'Total Skirmish Scores ---->' + '\n' +
+            'Total Skirmish Point ---->' + '\n' +
             'Red Skirmish Total: ' + redSkirm + '\n' +
             'Blue Skirmish Total: ' + blueSkirm + '\n' +
-            'Green Skirmish Total: ' + greenSkirm + '\n'
+            'Green Skirmish Total: ' + greenSkirm + '\n' +
+
+            'Current Skirmish Scores ---->' + '\n' +
+            'Red Skirmish: ' + currentRed + '\n' +
+            'Blue Skirmish: ' + currentBlue + '\n' +
+            'Green Skirmish: ' + currentGreen + '\n'
         )
     }
 
@@ -388,18 +405,6 @@ client.on("message", async (message) => {
             storeUserInfo[i]["name"] = holder.name
         }
 
-
-        // let onlykills = storeUserInfo.filter( user => {
-        //     if(user.wvwkills !== null){
-        //         return user;
-        //     }
-        // })
-        // let sorted = onlykills.sort((a,b) => (a.wvwkills > b.wvwkills) ? -1 : ((b.wvwkills > a.wvwkills) ? 1 : 0));
-        // let top10;
-        //
-        // if(sorted.length > 10){
-        //     top10 = sorted.splice(10)
-        // }
 
         message.channel.send('Current top 10 in WVW Kills!')
         for(let i=0; i<storeUserInfo.length; i++){
