@@ -15,6 +15,14 @@ var spyCount = 0;
 var yaksBendServerID = 1003
 
 
+var servers = [
+
+    ];
+var red;
+var blue;
+var green;
+
+
 
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`, or `bot.something`,
@@ -56,7 +64,11 @@ client.on("message", async (message) => {
             "\n !check ");
     }
 
-    var users = client.users;
+    if (message.content.startsWith("!modCommands")) {
+        message.channel.send("Commands currently: " +
+            "\n !purge " +
+            "\n !updateWVW");
+    }
 
     if(message.channel.id === "481688120215994378"){
 
@@ -107,11 +119,36 @@ client.on("message", async (message) => {
     }
 
     if (message.content.startsWith("!kda")) {
+        //get info
+        red = null;
+        blue = null;
+        green = null;
+
+        let enemyServers = await updateServers();
+
+        let redId = enemyServers.worlds.red
+        let blueId = enemyServers.worlds.blue
+        let greenId = enemyServers.worlds.green
+
+        if(red === null){
+            red = await getNames(redId)
+        }
+        if(blue === null){
+            blue = await getNames(blueId)
+        }
+        if(green === null){
+            green = await getNames(greenId)
+        }
+
+
+
+        //old crappy code
         var url = 'https://api.guildwars2.com/v2/wvw/matches/stats?world=1003'
         var info
         var redKda;
         var blueKda;
         var greenKda;
+
 
         fetch(url)
             .then(response => {
@@ -122,9 +159,9 @@ client.on("message", async (message) => {
                     blueKda = info.kills.blue / info.deaths.blue
                     greenKda = info.kills.green / info.deaths.green
 
-                    message.channel.send("Green KDA: " + greenKda.toFixed(2))
-                    message.channel.send("Red KDA: " + redKda.toFixed(2))
-                    message.channel.send("Blue KDA: " + blueKda.toFixed(2))
+                    message.channel.send(red[0].name +" KDA: " + redKda.toFixed(2))
+                    message.channel.send(blue[0].name +" KDA: " + blueKda.toFixed(2))
+                    message.channel.send(green[0].name +" KDA: " + greenKda.toFixed(2))
                 })
             })
     }
@@ -284,6 +321,29 @@ client.on("message", async (message) => {
     if(message.content.startsWith("!score")){
         let wvwScore = await score()
 
+        //get info
+        red = null;
+        blue = null;
+        green = null;
+
+        let enemyServers = await updateServers();
+
+        let redId = enemyServers.worlds.red
+        let blueId = enemyServers.worlds.blue
+        let greenId = enemyServers.worlds.green
+
+        if(red === null){
+            red = await getNames(redId)
+        }
+        if(blue === null){
+            blue = await getNames(blueId)
+        }
+        if(green === null){
+            green = await getNames(greenId)
+        }
+
+
+
 
         //total scores
         let redScore;
@@ -316,19 +376,19 @@ client.on("message", async (message) => {
 
         message.channel.send(
             'Total WVW Scores ----> '+ '\n' +
-            'Red Score: ' + redScore + '\n' +
-            'Blue Score: ' + blueScore + '\n' +
-            'Green Score: ' + greenScore + '\n' +
+            red[0].name +' Score: ' + redScore + '\n' +
+            blue[0].name +' Score: ' + blueScore + '\n' +
+            green[0].name + ' Score: ' + greenScore + '\n' +
 
             'Total Skirmish Point ---->' + '\n' +
-            'Red Skirmish Total: ' + redSkirm + '\n' +
-            'Blue Skirmish Total: ' + blueSkirm + '\n' +
-            'Green Skirmish Total: ' + greenSkirm + '\n' +
+            red[0].name +' Skirmish Total: ' + redSkirm + '\n' +
+            blue[0].name +' Skirmish Total: ' + blueSkirm + '\n' +
+            green[0].name +' Skirmish Total: ' + greenSkirm + '\n' +
 
             'Current Skirmish Scores ---->' + '\n' +
-            'Red Skirmish: ' + currentRed + '\n' +
-            'Blue Skirmish: ' + currentBlue + '\n' +
-            'Green Skirmish: ' + currentGreen + '\n'
+            red[0].name +' Current Skirmish: ' + currentRed + '\n' +
+            blue[0].name +' Current Skirmish: ' + currentBlue + '\n' +
+            green[0].name +' Current Skirmish: ' + currentGreen + '\n'
         )
     }
 
@@ -493,7 +553,25 @@ const score = async () => {
     let response = await fetch(url)
     wvwScores = await response.json()
     return wvwScores
+}
 
+const updateServers = async () => {
+    let url = 'https://api.guildwars2.com/v2/wvw/matches/overview?world=' + yaksBendServerID
+    let wvwServers
+
+    let response = await fetch(url)
+    wvwServers = await response.json();
+    return wvwServers
+
+}
+
+const getNames = async (serverId) => {
+    let url = 'https://api.guildwars2.com/v2/worlds?ids=' + serverId
+    let server
+
+    let response = await fetch(url)
+    server = await response.json();
+    return server
 
 }
 
