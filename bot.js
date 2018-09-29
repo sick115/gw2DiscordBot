@@ -473,6 +473,28 @@ client.on("message", async (message) => {
 
     }
 
+    if(message.content.startsWith("!update")){
+        let sql = "select * from users where wvwkills is not null"
+        let result;
+
+        result = await pool.query(sql)
+
+
+        message.channel.send("Beginning update... this may take a few moments")
+        let addingAccountName;
+        for(let i=0; i<result.length; i++){
+            addingAccountName = await fetchAccounts(result[i].api_key)
+            let insertSql = "UPDATE users SET account_id = ? WHERE api_key = ?"
+            let addAccount = [
+                account_id = addingAccountName.name,
+                api_key = result[i].api_key
+            ]
+            await pool.query(insertSql, addAccount)
+
+        }
+        message.channel.send("Update completed!")
+    }
+
 });
 
 
