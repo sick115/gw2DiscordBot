@@ -67,7 +67,8 @@ client.on("message", async (message) => {
     if (message.content.startsWith("!modCommands")) {
         message.channel.send("Commands currently: " +
             "\n !purge " +
-            "\n !updateWVW");
+            "\n !update" +
+            "\n !spyBlaster");
     }
 
     if(message.channel.id === "481688120215994378"){
@@ -528,6 +529,22 @@ client.on("message", async (message) => {
 
         }
         message.channel.send("Update completed!")
+    }
+
+    if(message.content.startsWith("!spyBlaster")){
+        let sql = "SELECT account_id FROM users WHERE on_yaks = 0"
+
+        let result;
+
+        result = await pool.query(sql)
+
+        message.channel.send("Spy blast happening, lets see what we got!")
+
+        let accountNameList =[];
+        for(let i=0; i<result.length; i++){
+            accountNameList.push(result[i].account_id)
+        }
+        message.channel.send('Tag and bagged!' +'\n' + accountNameList)
     }
 
 });
