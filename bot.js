@@ -255,6 +255,7 @@ client.on("message", async (message) => {
         // var verifiedRole = roles.find((item) => item.name === "Verified")
 
 
+        message.channel.send("Purge process beginning... this will take a few minutes")
         for(let i =0; i< result.length; i++){
 
 
@@ -270,7 +271,16 @@ client.on("message", async (message) => {
                 if (worldCheck.world === 1003) {
                     ybCount++
                     try {
-                   await userToModify.addRole(verifiedRole.id)
+                        await userToModify.addRole(verifiedRole.id)
+
+                        //ping sql db
+                        let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
+                        let nameShame = [
+                            on_yaks = 1,
+                            api_key = result[i].api_key
+                        ]
+                        await pool.query(sql, nameShame)
+
                     }catch(e){
                         console.log(e)
                     }
@@ -278,6 +288,16 @@ client.on("message", async (message) => {
                     linkCount++
                     try {
                        await userToModify.addRole(verifiedRole.id)
+
+                        //ping sql db
+                        let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
+                        let nameShame = [
+                            on_yaks = 1,
+                            api_key = result[i].api_key
+                        ]
+                        await pool.query(sql, nameShame)
+
+
                     }catch(e){
                         console.log(e)
                     }
@@ -287,6 +307,17 @@ client.on("message", async (message) => {
                         if(verifiedRole != undefined) {
                             await  userToModify.removeRole(verifiedRole.id)
                         }
+
+                        //ping sql db
+                        let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
+                        let nameShame = [
+                            on_yaks = 0,
+                            api_key = result[i].api_key
+                        ]
+                        await pool.query(sql, nameShame)
+
+
+
                     }catch(e){
                         console.log(e)
                     }
@@ -296,6 +327,8 @@ client.on("message", async (message) => {
         message.channel.send("YB Count: " + ybCount)
         message.channel.send("EBay Count: " + linkCount)
         message.channel.send("Spy Count: " + spyCount)
+
+        message.channel.send("Purge process finished!")
 
         ybCount = 0;
         linkCount = 0;
