@@ -480,7 +480,7 @@ client.on("message", async (message) => {
     }
 
     if(message.content.startsWith("!leaderboard")){
-        let sql = "select * from users where wvwkills is not null order by wvwkills desc limit 10"
+        let sql = "select * from users where wvwkills is not null AND on_yaks=1 order by wvwkills desc limit 10"
         let result;
 
         result = await pool.query(sql)
