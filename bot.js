@@ -507,7 +507,9 @@ client.on("message", async (message) => {
     }
 
     if(message.content.startsWith("!update")){
-        let sql = "select * from users where wvwkills is not null"
+        // let sql = "select * from users where wvwkills is not null"
+        let sql = "select * from users"
+
         let result;
 
         result = await pool.query(sql)
