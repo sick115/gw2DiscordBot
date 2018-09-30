@@ -485,7 +485,7 @@ client.on("message", async (message) => {
     }
 
     if(message.content.startsWith("!leaderboard")){
-        let sql = "select * from users where wvwkills is not null AND on_yaks=1 order by wvwkills desc limit 10"
+        let sql = "SELECT * FROM users WHERE wvwkills is not null AND on_yaks=1 order by wvwkills desc limit 10"
         let result;
 
         result = await pool.query(sql)
@@ -503,13 +503,60 @@ client.on("message", async (message) => {
             storeUserInfo[i]["name"] = holder.name
         }
 
-
-        message.channel.send('Current top 10 in WVW Kills!')
-        for(let i=0; i<storeUserInfo.length; i++){
-            message.channel.send('Rank '+ (i+1)  +' Account Name: ' + storeUserInfo[i].name + ' Kill Count: ' + storeUserInfo[i].wvwkills)
+            message.channel.send(
+            {embed: {
+                color: 3447003,
+                author: {
+                  name: client.user.username,
+                  icon_url: client.user.avatarURL
+                },
+                title: "Top 10 Leaderboard",
+                description: "The killingest people in Yak's Bend",
+                fields: [{
+                    name: "#1",
+                    value: "Name: " + storeUserInfo[0].name + "Kill Count: " + storeUserInfo[0].wvwkills
+                  },
+                  {
+                    name: "#2",
+                    value: "Name: " + storeUserInfo[1].name + "Kill Count: " + storeUserInfo[1].wvwkills
+                  },
+                  {
+                    name: "#3",
+                    value: "Name: " + storeUserInfo[2].name + "Kill Count: " + storeUserInfo[2].wvwkills
+                  },
+                  {
+                    name: "#4",
+                    value: "Name: " + storeUserInfo[3].name + "Kill Count: " + storeUserInfo[3].wvwkills
+                  },
+                  {
+                    name: "#5",
+                    value: "Name: " + storeUserInfo[4].name + "Kill Count: " + storeUserInfo[4].wvwkills
+                  },
+                  {
+                    name: "#6",
+                    value: "Name: " + storeUserInfo[5].name + "Kill Count: " + storeUserInfo[5].wvwkills
+                  },
+                  {
+                    name: "#7",
+                    value: "Name: " + storeUserInfo[6].name + "Kill Count: " + storeUserInfo[6].wvwkills
+                  },
+                  {
+                    name: "#8",
+                    value: "Name: " + storeUserInfo[7].name + "Kill Count: " + storeUserInfo[7].wvwkills
+                  },
+                  {
+                    name: "#9",
+                    value: "Name: " + storeUserInfo[8].name + "Kill Count: " + storeUserInfo[8].wvwkills
+                  },
+                  {
+                    name: "#10",
+                    value: "Name: " + storeUserInfo[9].name + "Kill Count: " + storeUserInfo[9].wvwkills
+                  }
+                ]
+            }
         }
-
-    }
+    ) 
+}
 
     if(message.content.startsWith("!update")){
         // let sql = "select * from users where wvwkills is not null"
