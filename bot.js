@@ -266,6 +266,8 @@ client.on("message", async (message) => {
             // let userToModify = client.users.get(result[i].user_id)
             let userToModify = client.guilds.get("476902310581239810").members.get(result[i].user_id)
             let verifiedRole = message.guild.roles.find("name", "Verified");
+            let spyRole = message.guild.roles.find("name", "Thinks They're Sneaky");
+
 
 
             //numbers will need to be changed for cooresponding servers
@@ -306,7 +308,9 @@ client.on("message", async (message) => {
                     spyCount++
                     try {
                         if(verifiedRole != undefined) {
-                            await  userToModify.removeRole(verifiedRole.id)
+                            await userToModify.removeRole(verifiedRole.id)
+                            await userToModify.addRole(spyRole.id)
+
                         }
 
                         //ping sql db
