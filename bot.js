@@ -176,7 +176,7 @@ function modCommands(message) {
         "\n !purge " +
         "\n !update" +
         "\n !spyBlaster" +
-        "\n !resetLeaderboard" +);
+        "\n !resetLeaderboard" );
 }
 
 function users(message) {
