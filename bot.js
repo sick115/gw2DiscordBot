@@ -625,14 +625,90 @@ async function weekly(message) {
 
 
     let sql = "SELECT * FROM users where user_id = ?"
-    let result;
+    var grabUserData;
+
     try {
         //query DB for the user data
-        result = await pool.query(sql, [userId])
+        grabUserData = await pool.query(sql, [userId])
     } catch (err) {
         throw new Error(err)
     }
+
+    if(grabUserData[0].account_id === null){
+        message.channel.send("Please come back later for server to be updated.")
+    }else {
+        try {
+            await wvwKills(grabUserData[0].api_key)
+            if (wvwPKills.current == undefined) {
+                message.channel.send('You need to give more API access');
+            } else {
+
+
+
+                //check to see if user_id is not in weekly tourny DB
+                let prev_count = parseInt(grabUserData[0].wvwkills)
+                let account_id = grabUserData[0].account_id
+
+                if (grabUserData[0].prev_count === null) {
+                    let pushPrevCountSQL = "UPDATE users SET prev_count = ? WHERE account_id = ?"
+                    var values = [
+                        prev_count,
+                        account_id
+                    ]
+                    await pool.query(pushPrevCountSQL, values)
+
+                }
+
+                let current_count = wvwPKills.current
+
+                let weekly_kill_total;
+                if(grabUserData[0].prev_count === null){
+                    weekly_kill_total = 0;
+                }else {
+                    weekly_kill_total = wvwPKills.current - grabUserData[0].prev_count
+                }
+
+                let killWeeklySQL = "UPDATE users SET wvwkills = ?, current_count = ?, weekly_kill_total = ? WHERE account_id = ?"
+                // let killWeeklySQL = "UPDATE users SET wvwkills = ?, prev_count = ?, current_count = ?, weekly_kill_total = ? WHERE account_id = ?"
+                var values = [
+                    current_count,
+                    current_count,
+                    weekly_kill_total,
+                    account_id
+                ]
+
+
+                await pool.query(killWeeklySQL, values)
+
+                if (grabUserData[0].prev_count === null) {
+                    message.channel.send("You've been entered! Check the leaderboard at: http://54.175.138.146/ - keep typing !weekly to watch it grow!")
+                }else {
+                    message.channel.send("You're up too: " + weekly_kill_total + " kills this week! Check the leaderboard at: http://54.175.138.146/")
+                }
+            }
+        } catch (e) {
+            message.channel.send('You need to verify for this or run !kills prior to using this functionality.');
+
+        }
+    }
 }
+
+async function resetLeaderboard(message){
+
+    if(message.member.roles.find("name", "@mod") || message.member.roles.find("name", "Chris") ||
+        message.member.roles.find("name", "@admin") ){
+
+        message.channel.send('Clearing Weekly contenders....')
+        let clearWeeklyTournySQL = "UPDATE users SET prev_count = NULL, current_count = NULL, weekly_kill_total = NULL"
+
+        await pool.query(clearWeeklyTournySQL)
+
+    }else{
+        message.channel.send('You do not have access to this!')
+    }
+}
+
+
 
 client.on("message", async (message) => {
     if (message.author.bot) return;
@@ -681,6 +757,8 @@ client.on("message", async (message) => {
         await spyBlaster(message);
     } else if(message.content.startsWith("!weekly")){
         await weekly(message);
+    } else if(message.content.startsWith("!resetLeaderboard")){
+        await resetLeaderboard(message);
     }
 });
 
