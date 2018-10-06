@@ -166,6 +166,7 @@ function commands(message) {
         "\n !kda " +
         "\n !score " +
         "\n !kills " +
+        "\n !weekly " +
         "\n !leaderboard " +
         "\n !check ");
 }
@@ -174,7 +175,8 @@ function modCommands(message) {
     message.channel.send("Commands currently: " +
         "\n !purge " +
         "\n !update" +
-        "\n !spyBlaster");
+        "\n !spyBlaster" +
+        "\n !resetLeaderboard" +);
 }
 
 function users(message) {
@@ -325,101 +327,106 @@ async function check(message) {
 }
 
 async function purge(message) {
-    var sql = "SELECT * FROM users"
-    var result;
-    try {
-        //gets one result back
-        result = await pool.query(sql)
-    } catch (err) {
-        throw new Error(err)
-    }
+    if (message.member.roles.find("name", "@mod") || message.member.roles.find("name", "Chris") ||
+        message.member.roles.find("name", "@admin")) {
+        var sql = "SELECT * FROM users"
+        var result;
+        try {
+            //gets one result back
+            result = await pool.query(sql)
+        } catch (err) {
+            throw new Error(err)
+        }
 
 
-    var roles = message.guild.roles
+        var roles = message.guild.roles
 
-    // var verifiedRole = roles.find((item) => item.name === "Verified")
-
-
-    message.channel.send("Purge process beginning... this will take a few minutes")
-    for (let i = 0; i < result.length; i++) {
+        // var verifiedRole = roles.find((item) => item.name === "Verified")
 
 
-        await fetchBulk(result[i].api_key)
-
-        //get users from db
-        // let userToModify = client.users.get(result[i].user_id)
-        let userToModify = client.guilds.get("476902310581239810").members.get(result[i].user_id)
-        let verifiedRole = message.guild.roles.find("name", "Verified");
-        let spyRole = message.guild.roles.find("name", "Thinks They're Sneaky");
+        message.channel.send("Purge process beginning... this will take a few minutes")
+        for (let i = 0; i < result.length; i++) {
 
 
-        //numbers will need to be changed for cooresponding servers
-        if (worldCheck.world === 1003) {
-            ybCount++
-            try {
-                await userToModify.addRole(verifiedRole.id)
+            await fetchBulk(result[i].api_key)
 
-                //ping sql db
-                let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
-                let nameShame = [
-                    on_yaks = 1,
-                    api_key = result[i].api_key
-                ]
-                await pool.query(sql, nameShame)
-
-            } catch (e) {
-                console.log(e)
-            }
-        } else if (worldCheck.world === 1010) {
-            linkCount++
-            try {
-                await userToModify.addRole(verifiedRole.id)
-
-                //ping sql db
-                let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
-                let nameShame = [
-                    on_yaks = 1,
-                    api_key = result[i].api_key
-                ]
-                await pool.query(sql, nameShame)
+            //get users from db
+            // let userToModify = client.users.get(result[i].user_id)
+            let userToModify = client.guilds.get("476902310581239810").members.get(result[i].user_id)
+            let verifiedRole = message.guild.roles.find("name", "Verified");
+            let spyRole = message.guild.roles.find("name", "Thinks They're Sneaky");
 
 
-            } catch (e) {
-                console.log(e)
-            }
-        } else {
-            spyCount++
-            try {
-                if (verifiedRole != undefined) {
-                    await userToModify.removeRole(verifiedRole.id)
-                    await userToModify.addRole(spyRole.id)
+            //numbers will need to be changed for cooresponding servers
+            if (worldCheck.world === 1003) {
+                ybCount++
+                try {
+                    await userToModify.addRole(verifiedRole.id)
 
+                    //ping sql db
+                    let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
+                    let nameShame = [
+                        on_yaks = 1,
+                        api_key = result[i].api_key
+                    ]
+                    await pool.query(sql, nameShame)
+
+                } catch (e) {
+                    console.log(e)
                 }
+            } else if (worldCheck.world === 1010) {
+                linkCount++
+                try {
+                    await userToModify.addRole(verifiedRole.id)
 
-                //ping sql db
-                let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
-                let nameShame = [
-                    on_yaks = 0,
-                    api_key = result[i].api_key
-                ]
-                await pool.query(sql, nameShame)
+                    //ping sql db
+                    let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
+                    let nameShame = [
+                        on_yaks = 1,
+                        api_key = result[i].api_key
+                    ]
+                    await pool.query(sql, nameShame)
 
 
-            } catch (e) {
-                console.log(e)
+                } catch (e) {
+                    console.log(e)
+                }
+            } else {
+                spyCount++
+                try {
+                    if (verifiedRole != undefined) {
+                        await userToModify.removeRole(verifiedRole.id)
+                        await userToModify.addRole(spyRole.id)
+
+                    }
+
+                    //ping sql db
+                    let sql = "UPDATE users SET on_yaks = ? WHERE api_key = ?"
+                    let nameShame = [
+                        on_yaks = 0,
+                        api_key = result[i].api_key
+                    ]
+                    await pool.query(sql, nameShame)
+
+
+                } catch (e) {
+                    console.log(e)
+                }
             }
         }
+
+        message.channel.send("YB Count: " + ybCount)
+        message.channel.send("EBay Count: " + linkCount)
+        message.channel.send("Spy Count: " + spyCount)
+
+        message.channel.send("Purge process finished!")
+
+        ybCount = 0;
+        linkCount = 0;
+        spyCount = 0;
+    }else{
+        message.channel.send('You do not have access to this!')
     }
-
-    message.channel.send("YB Count: " + ybCount)
-    message.channel.send("EBay Count: " + linkCount)
-    message.channel.send("Spy Count: " + spyCount)
-
-    message.channel.send("Purge process finished!")
-
-    ybCount = 0;
-    linkCount = 0;
-    spyCount = 0;
 }
 
 async function score(message) {
@@ -577,45 +584,60 @@ async function leaderboard(message) {
 }
 
 async function update(message) {
-    let sql = "select * from users"
 
-    let result;
+    if(message.member.roles.find("name", "@mod") || message.member.roles.find("name", "Chris") ||
+        message.member.roles.find("name", "@admin") ) {
+        let sql = "select * from users"
 
-    result = await pool.query(sql)
+        let result;
+
+        result = await pool.query(sql)
 
 
-    message.channel.send("Beginning update... this may take a few moments")
-    let addingAccountName;
-    for (let i = 0; i < result.length; i++) {
-        addingAccountName = await fetchAccounts(result[i].api_key)
-        let insertSql = "UPDATE users SET account_id = ? WHERE api_key = ?"
-        let addAccount = [
-            account_id = addingAccountName.name,
-            api_key = result[i].api_key
-        ]
-        await pool.query(insertSql, addAccount)
+        message.channel.send("Beginning update... this may take a few moments")
+        let addingAccountName;
+        for (let i = 0; i < result.length; i++) {
+            addingAccountName = await fetchAccounts(result[i].api_key)
+            let insertSql = "UPDATE users SET account_id = ? WHERE api_key = ?"
+            let addAccount = [
+                account_id = addingAccountName.name,
+                api_key = result[i].api_key
+            ]
+            await pool.query(insertSql, addAccount)
 
+        }
+        if (message)
+            message.channel.send("Update completed!")
+        else
+            console.log('Job update complete!')
+    }else{
+        message.channel.send('You do not have access to this!')
     }
-    if(message)
-       message.channel.send("Update completed!")
-    else
-        console.log('Job update complete!')
 }
 
 async function spyBlaster(message) {
-    let sql = "SELECT account_id FROM users WHERE on_yaks = 0"
 
-    let result;
 
-    result = await pool.query(sql)
+    if(message.member.roles.find("name", "@mod") || message.member.roles.find("name", "Chris") ||
+        message.member.roles.find("name", "@admin") ) {
 
-    message.channel.send("Spy blast happening, lets see what we got!")
 
-    let accountNameList = [];
-    for (let i = 0; i < result.length; i++) {
-        accountNameList.push(result[i].account_id)
+        let sql = "SELECT account_id FROM users WHERE on_yaks = 0"
+
+        let result;
+
+        result = await pool.query(sql)
+
+        message.channel.send("Spy blast happening, lets see what we got!")
+
+        let accountNameList = [];
+        for (let i = 0; i < result.length; i++) {
+            accountNameList.push(result[i].account_id)
+        }
+        message.channel.send('Tag and bagged!' + '\n' + accountNameList)
+    }else{
+        message.channel.send('You do not have access to this!')
     }
-    message.channel.send('Tag and bagged!' + '\n' + accountNameList)
 }
 
 async function weekly(message) {
