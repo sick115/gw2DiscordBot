@@ -705,7 +705,7 @@ async function weekly(message) {
                 if (grabUserData[0].prev_count === null) {
                     message.channel.send("You've been entered! Check the leaderboard at: http://thetopyak.com/ - keep typing !weekly to watch it grow!")
                 }else {
-                    message.channel.send("You're up too: " + weekly_kill_total + " kills this week! Check the leaderboard at: http://54.175.138.146/")
+                    message.channel.send("You're up too: " + weekly_kill_total + " kills this week! Check the leaderboard at: http://thetopyak.com/")
                 }
             }
         } catch (e) {
