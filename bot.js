@@ -700,10 +700,13 @@ async function weekly(message) {
                 let current_count = wvwPKills.current
 
                 let weekly_kill_total;
+                let kills_from_last;
+
                 if(grabUserData[0].prev_count === null){
                     weekly_kill_total = 0;
                 }else {
                     weekly_kill_total = wvwPKills.current - grabUserData[0].prev_count
+                    kills_from_last = current_count - grabUserData[0].wvwkills
                 }
 
                 let killWeeklySQL = "UPDATE users SET wvwkills = ?, current_count = ?, weekly_kill_total = ? WHERE account_id = ?"
@@ -721,7 +724,7 @@ async function weekly(message) {
                 if (grabUserData[0].prev_count === null) {
                     message.channel.send("You've been entered! Check the leaderboard at: http://thetopyak.com/ - keep typing !weekly to watch it grow!")
                 }else {
-                    message.channel.send("You're up too: " + weekly_kill_total + " kills this week! Check the leaderboard at: http://thetopyak.com/")
+                    message.channel.send("You're up to: " + weekly_kill_total + " kills this week! You've logged " + kills_from_last + " from the last update! Check the leaderboard at: http://thetopyak.com/")
                 }
             }
         } catch (e) {
