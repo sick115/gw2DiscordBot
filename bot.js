@@ -549,7 +549,7 @@ async function kills(message) {
                                     _output += 'Slacker. Get to work.';
                             }
                         } else {
-                            message.channel.send('. Since this is your first time running !kills, we\'ve stored your current kill count. Try it again later to see your new kill count!');
+                            _output += '. Since this is your first time running !kills, we\'ve stored your current kill count. Try it again later to see your new kill count!';
                         }
                         message.channel.send(_output);
                     } catch (err) {
