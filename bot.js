@@ -505,8 +505,8 @@ async function score(message) {
 
 async function kills(message) {
     // Thwart user attempt to run the command outside kill count channel
-    if (message.channel_id != chKillCountsId) {
-            message.channel.send('@' + message.author.username + ' Are you looking for #' + chKillCountsName + '?');
+    if (message.channel_id != chanKillCountsId) {
+            message.channel.send('@' + message.author.username + ' Are you looking for #' + chanKillCountsName + '?');
         } else {
             let userId;
             //obtain userId of one who used kill command
