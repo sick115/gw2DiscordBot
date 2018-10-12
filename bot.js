@@ -529,7 +529,7 @@ async function kills(message) {
                     message.channel.send('@' + message.author.username + ' Your API key needs the "progression" permission. Register a new key and run the command again.');
                 } else {
                     var _output = '';
-                    _output += '@' + message.author.username + ' Your kill total is ' + wvwPKills.current);
+                    _output += '@' + message.author.username + ' Your kill total is ' + wvwPKills.current;
                     try {
                         let killDiff = wvwPKills.current - result[0].wvwkills;
 
