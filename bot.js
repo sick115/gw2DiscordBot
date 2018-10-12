@@ -526,17 +526,32 @@ async function kills(message) {
                 await wvwKills(result[0].api_key)
                 let apiHolder = result[0].api_key
                 if (wvwPKills.current == undefined) {
-                    message.channel.send('@' + message.author.username + ' You API key needs need the "progression" permission. Register a new key and run the command again.');
+                    message.channel.send('@' + message.author.username + ' Your API key needs the "progression" permission. Register a new key and run the command again.');
                 } else {
-                    message.channel.send('@' + message.author.username + ' Your kill total is ' + wvwPKills.current + '.');
+                    var _output = '';
+                    _output += '@' + message.author.username + ' Your kill total is ' + wvwPKills.current);
                     try {
-                        let killDiff = wvwPKills.current - result[0].wvwkills
+                        let killDiff = wvwPKills.current - result[0].wvwkills;
 
                         if (result[0].wvwkills !== null) {
-                            message.channel.send('Your past kill total is: ' + result[0].wvwkills + '\nYour kill difference is: ' + killDiff);
+                            _output += ', an increase of ' + killDiff + ' over your previous total of ' + result[0].wvwkills + '. ';
+                            if (killDiff > 1000) {
+                                    _output += 'You\'re a beast!';
+                                } else if (killDiff > 500) {
+                                    _output += 'Nice! Keepin\' the Yak dream alive.';
+                                } else if (killDiff > 100) {
+                                    _output += 'Respectable, but double your efforts!';
+                                } else if (killDiff > 50) {
+                                    _output += 'Every little bit helps. I think.';
+                                } else if (killDiff > 10) {
+                                    _output += 'Stop having a life and support the server, kthx.';
+                                } else if (killDiff == 0) {
+                                    _output += 'Slacker. Get to work.';
+                            }
                         } else {
                             message.channel.send('Since this is your first time running !kills, we\'ve stored your current kill count. Try it again later to see your new kill count!');
                         }
+                        message.channel.send(_output);
                     } catch (err) {
                     }
 
