@@ -18,7 +18,6 @@ var yaksBendServerID = 1003
 
 // Channels
 var chanKillCountsId = 494353907804536832;
-var chanKillCountsName = 'killcounts'
 
 var servers = [
 
@@ -506,7 +505,7 @@ async function score(message) {
 async function kills(message) {
     // Thwart user attempt to run the command outside kill count channel
     if (message.channel.id != chanKillCountsId) {
-            message.channel.send('@' + message.author.username + ' Are you looking for #' + chanKillCountsName + '?');
+            message.channel.send('\\@' + message.author.username + ' Are you looking for \\#' + client.channels.get(chanKillCountsId).name + '?');
         } else {
             let userId;
             //obtain userId of one who used kill command
@@ -526,10 +525,10 @@ async function kills(message) {
                 await wvwKills(result[0].api_key)
                 let apiHolder = result[0].api_key
                 if (wvwPKills.current == undefined) {
-                    message.channel.send('@' + message.author.username + ' Your API key needs the "progression" permission. Register a new key and run the command again.');
+                    message.channel.send('\\@' + message.author.username + ' Your API key needs the "progression" permission. Register a new key and run the command again.');
                 } else {
                     var _output = '';
-                    _output += '@' + message.author.username + ' Your kill total is ' + wvwPKills.current;
+                    _output += '\\@' + message.author.username + ' Your kill total is ' + wvwPKills.current;
                     try {
                         let killDiff = wvwPKills.current - result[0].wvwkills;
 
