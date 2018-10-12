@@ -16,6 +16,9 @@ var spyCount = 0;
 
 var yaksBendServerID = 1003
 
+// Channels
+var chanKillCountsId = 494353907804536832;
+var chanKillCountsName = 'killcounts'
 
 var servers = [
 
@@ -501,59 +504,72 @@ async function score(message) {
 }
 
 async function kills(message) {
-    let userId;
-    //obtain userId of one who used kill command
-    userId = message.author.id;
-
-
-    let sql = "SELECT * FROM users where user_id = ?"
-    let result;
-
-    try {
-        //query DB for the user data
-        result = await pool.query(sql, [userId])
-    } catch (err) {
-        throw new Error(err)
-    }
-
-    try {
-        await wvwKills(result[0].api_key)
-        let apiHolder = result[0].api_key
-        if (wvwPKills.current == undefined) {
-            message.channel.send('You need to give more API access');
+    // Thwart user attempt to run the command outside kill count channel
+    if (message.channel_id != chKillCountsId) {
+            message.channel.send('@' + message.author.username + ' Are you looking for #' + chKillCountsName + '?');
         } else {
-            message.channel.send('Your kill total is: ' + wvwPKills.current);
+            let userId;
+            //obtain userId of one who used kill command
+            userId = message.author.id;
 
-            let sql = "SELECT wvwkills FROM users WHERE user_id = ?"
+            let sql = "SELECT api_key, wvwkills FROM users where user_id = ?"
             let result;
 
-
             try {
+                //query DB for the user data
                 result = await pool.query(sql, [userId])
-                let killDiff = wvwPKills.current - result[0].wvwkills
-
-                if (result[0].wvwkills !== null) {
-                    message.channel.send('Your past kill total is: ' + result[0].wvwkills + '\nYour kill difference is: ' + killDiff);
-                } else {
-                    message.channel.send('Since this is your first time running !kills, we\'ve stored your current kill count. Come back later and try again to see your new kill count!');
-                }
             } catch (err) {
+                throw new Error(err)
             }
 
-            //update user DB with newest kill rank
-            let killSql = "UPDATE users SET wvwkills = ? WHERE user_id = ?"
+            try {
+                await wvwKills(result[0].api_key)
+                let apiHolder = result[0].api_key
+                if (wvwPKills.current == undefined) {
+                    message.channel.send('@' + message.author.username + ' Your API key needs the "progression" permission. Register a new key and run the command again.');
+                } else {
+                    var _output = '';
+                    _output += '@' + message.author.username + ' Your kill total is ' + wvwPKills.current);
+                    try {
+                        let killDiff = wvwPKills.current - result[0].wvwkills;
 
-            let killLoad = [
-                wvwkills = wvwPKills.current,
-                user_id = userId
-            ]
-            await pool.query(killSql, killLoad)
+                        if (result[0].wvwkills !== null) {
+                            _output += ', an increase of ' + killDiff + ' over your previous total of ' + result[0].wvwkills + '. ';
+                            if (killDiff > 1000) {
+                                    _output += 'You\'re a beast!';
+                                } else if (killDiff > 500) {
+                                    _output += 'Nice! Keepin\' the Yak dream alive.';
+                                } else if (killDiff > 100) {
+                                    _output += 'Respectable, but double your efforts!';
+                                } else if (killDiff > 50) {
+                                    _output += 'Every little bit helps. I think.';
+                                } else if (killDiff > 10) {
+                                    _output += 'Stop having a life and support the server, kthx.';
+                                } else if (killDiff == 0) {
+                                    _output += 'Slacker. Get to work.';
+                            }
+                        } else {
+                            _output += '. Since this is your first time running !kills, we\'ve stored your current kill count. Try it again later to see your new kill count!';
+                        }
+                        message.channel.send(_output);
+                    } catch (err) {
+                    }
+
+                    //update user DB with newest kill rank
+                    let killSql = "UPDATE users SET wvwkills = ? WHERE user_id = ?"
+
+                    let killLoad = [
+                        wvwkills = wvwPKills.current,
+                        user_id = userId
+                    ]
+                    await pool.query(killSql, killLoad)
 
 
-        }
-    } catch (e) {
-        message.channel.send('You need to verify for this.');
+                }
+            } catch (e) {
+                message.channel.send('You need to be a verified user for this.');
 
+            }
     }
 }
 
