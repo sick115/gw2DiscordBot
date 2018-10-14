@@ -568,7 +568,7 @@ async function kills(message) {
           try {
               await wvwKills(grabUserData[0].api_key);
               if (wvwPKills.current == undefined) {
-                  message.channel.send('\nYour API key needs the "progression" permission. Register a new key and run the command again.');
+                  _output += '\nYour API key needs the "progression" permission. Register a new key and run the command again.';
                 } else {
                   //check to see if user_id is not in weekly tourny DB
                   let prev_count = parseInt(grabUserData[0].wvwkills);
