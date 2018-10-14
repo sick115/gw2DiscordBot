@@ -1,20 +1,20 @@
 // Load up the discord.js library
 const Discord = require("discord.js");
-const fetch = require('node-fetch')
-const cron = require('cron').CronJob
+const fetch = require('node-fetch');
+const cron = require('cron').CronJob;
 
 
-var pool = require('./database')
+var pool = require('./database');
 
 
 
 var worldCheck = [];
-var wvwPKills = []
+var wvwPKills = [];
 var ybCount = 0;
 var linkCount = 0;
 var spyCount = 0;
 
-var yaksBendServerID = 1003
+var yaksBendServerID = 1003;
 
 // Channels
 var chanKillCountsId = 494353907804536832;
@@ -502,74 +502,114 @@ async function score(message) {
     )
 }
 
+async function weekly(message) {
+  message.reply('This command has been rolled into !kills.');
+}
+
 async function kills(message) {
-    // Thwart user attempt to run the command outside kill count channel
-    if (message.channel.id != chanKillCountsId) {
-            message.channel.send( message.author.toString() + ' Are you looking for' + message.guild.channels.find(channel => channel.name === "killcounts").toString() + '?');
+  var _output = '';
+  // Thwart user attempt to run the command outside kill count channel
+  if (message.channel.id != chanKillCountsId) {
+      _output += 'Try again in the ' + message.guild.channels.find(channel => channel.name === "killcounts").toString() + ' channel.');
+    } else {
+      // obtain userId of one who used kill command
+      let userId = message.author.id;
+      let sql = "SELECT api_key, wvwkills, account_id, prev_count FROM users where user_id = ?"
+      let grabUserData;
+      try {
+          // query DB for the user data
+          grabUserData = await pool.query(sql, [userId]);
+        } catch (err) {
+          throw new Error(err);
+      }
+      try {
+          await wvwKills(grabUserData[0].api_key);
+          let apiHolder = grabUserData[0].api_key;
+          if (wvwPKills.current == undefined) {
+              _output += 'Your API key needs the "progression" permission. Register a new key and run the command again.';
+            } else {
+              _output +=  'Your kill total is ' + wvwPKills.current;
+              try {
+                  let killDiff = wvwPKills.current - grabUserData[0].wvwkills;
+                  if (grabUserData[0].wvwkills !== null) {
+                      _output += ', an increase of ' + killDiff + ' over your previous total of ' + grabUserData[0].wvwkills + '. ';
+                      if (killDiff > 1000) {
+                          _output += 'You\'re a beast!';
+                        } else if (killDiff > 500) {
+                          _output += 'Nice! Keepin\' the Yak dream alive.';
+                        } else if (killDiff > 100) {
+                          _output += 'Respectable, but double your efforts!';
+                        } else if (killDiff > 50) {
+                          _output += 'Every little bit helps. I think.';
+                        } else if (killDiff > 10) {
+                          _output += 'Stop having a life and support the server, kthx.';
+                        } else if (killDiff == 0) {
+                          _output += 'Slacker. Get to work.';
+                      }
+                    } else {
+                      _output += '. Since this is your first time running !kills, we\'ve stored your current kill count. Try it again later to see your new kill count!';
+                  }
+                } catch (err) {
+              }
+              // update user DB with newest kill rank
+              let killSql = "UPDATE users SET wvwkills = ? WHERE user_id = ?";
+              let killLoad = [
+                wvwkills = wvwPKills.current,
+                user_id = userId
+              ];
+              await pool.query(killSql, killLoad);
+          }
+        } catch (e) {
+          _output += 'You need to be a verified user for this.';
+      }
+      if (grabUserData[0].account_id === null) {
+          _output += '\nWeekly stats are currently unavailable. Try again later after the server has updated.';
         } else {
-            let userId;
-            //obtain userId of one who used kill command
-            userId = message.author.id;
-
-            let sql = "SELECT api_key, wvwkills FROM users where user_id = ?"
-            let result;
-
-            try {
-                //query DB for the user data
-                result = await pool.query(sql, [userId])
-            } catch (err) {
-                throw new Error(err)
-            }
-
-            try {
-                await wvwKills(result[0].api_key)
-                let apiHolder = result[0].api_key
-                if (wvwPKills.current == undefined) {
-                    message.channel.send(message.author.toString() + ' Your API key needs the "progression" permission. Register a new key and run the command again.');
+          try {
+              await wvwKills(grabUserData[0].api_key);
+              if (wvwPKills.current == undefined) {
+                  message.channel.send('\nYour API key needs the "progression" permission. Register a new key and run the command again.');
                 } else {
-                    var _output = '';
-                    _output +=  message.author.toString() + ' Your kill total is ' + wvwPKills.current;
-                    try {
-                        let killDiff = wvwPKills.current - result[0].wvwkills;
-
-                        if (result[0].wvwkills !== null) {
-                            _output += ', an increase of ' + killDiff + ' over your previous total of ' + result[0].wvwkills + '. ';
-                            if (killDiff > 1000) {
-                                    _output += 'You\'re a beast!';
-                                } else if (killDiff > 500) {
-                                    _output += 'Nice! Keepin\' the Yak dream alive.';
-                                } else if (killDiff > 100) {
-                                    _output += 'Respectable, but double your efforts!';
-                                } else if (killDiff > 50) {
-                                    _output += 'Every little bit helps. I think.';
-                                } else if (killDiff > 10) {
-                                    _output += 'Stop having a life and support the server, kthx.';
-                                } else if (killDiff == 0) {
-                                    _output += 'Slacker. Get to work.';
-                            }
-                        } else {
-                            _output += '. Since this is your first time running !kills, we\'ve stored your current kill count. Try it again later to see your new kill count!';
-                        }
-                        message.channel.send(_output);
-                    } catch (err) {
-                    }
-
-                    //update user DB with newest kill rank
-                    let killSql = "UPDATE users SET wvwkills = ? WHERE user_id = ?"
-
-                    let killLoad = [
-                        wvwkills = wvwPKills.current,
-                        user_id = userId
-                    ]
-                    await pool.query(killSql, killLoad)
-
-
-                }
+                  //check to see if user_id is not in weekly tourny DB
+                  let prev_count = parseInt(grabUserData[0].wvwkills);
+                  let account_id = grabUserData[0].account_id;
+                  if (grabUserData[0].prev_count === null) {
+                    let pushPrevCountSQL = "UPDATE users SET prev_count = ? WHERE account_id = ?";
+                    var values = [ prev_count, account_id ];
+                    await pool.query(pushPrevCountSQL, values);
+                  }
+                  let current_count = wvwPKills.current;
+                  let weekly_kill_total;
+                  let kills_from_last;
+                  if (grabUserData[0].prev_count === null) {
+                      weekly_kill_total = 0;
+                    } else {
+                      weekly_kill_total = wvwPKills.current - grabUserData[0].prev_count;
+                      kills_from_last = current_count - grabUserData[0].wvwkills;
+                  }
+                  let killWeeklySQL = "UPDATE users SET wvwkills = ?, current_count = ?, weekly_kill_total = ? WHERE account_id = ?";
+                  // let killWeeklySQL = "UPDATE users SET wvwkills = ?, prev_count = ?, current_count = ?, weekly_kill_total = ? WHERE account_id = ?"
+                  var values = [
+                    current_count,
+                    current_count,
+                    weekly_kill_total,
+                    account_id
+                  ];
+                  await pool.query(killWeeklySQL, values);
+                  if (grabUserData[0].prev_count === null) {
+                      _output += '\nYou\'ve been added to the leaderboard at http://thetopyak.com/ - this gets updated every time you run !kills.');
+                    } else {
+                      _output += '\nYou\'re up to ' + weekly_kill_total + ' kills for the week!';
+                      //You\'ve logged ' + kills_from_last + ' from the last update! Check the leaderboard at http://thetopyak.com/ for updates.');
+                  }
+              }
             } catch (e) {
-                message.channel.send('You need to be a verified user for this.');
+              _output += '\nYou need to be a verified user for this.';
 
-            }
-    }
+          }
+      }
+  }
+  message.reply(_output);
 }
 
 async function leaderboard(message) {
@@ -655,83 +695,6 @@ async function spyBlaster(message) {
     }
 }
 
-async function weekly(message) {
-    let userId;
-    //obtain userId of one who used kill command
-    userId = message.author.id;
-
-
-    let sql = "SELECT * FROM users where user_id = ?"
-    var grabUserData;
-
-    try {
-        //query DB for the user data
-        grabUserData = await pool.query(sql, [userId])
-    } catch (err) {
-        throw new Error(err)
-    }
-
-    if(grabUserData[0].account_id === null){
-        message.channel.send("Please come back later for server to be updated.")
-    }else {
-        try {
-            await wvwKills(grabUserData[0].api_key)
-            if (wvwPKills.current == undefined) {
-                message.channel.send('You need to give more API access');
-            } else {
-
-
-
-                //check to see if user_id is not in weekly tourny DB
-                let prev_count = parseInt(grabUserData[0].wvwkills)
-                let account_id = grabUserData[0].account_id
-
-                if (grabUserData[0].prev_count === null) {
-                    let pushPrevCountSQL = "UPDATE users SET prev_count = ? WHERE account_id = ?"
-                    var values = [
-                        prev_count,
-                        account_id
-                    ]
-                    await pool.query(pushPrevCountSQL, values)
-
-                }
-
-                let current_count = wvwPKills.current
-
-                let weekly_kill_total;
-                let kills_from_last;
-
-                if(grabUserData[0].prev_count === null){
-                    weekly_kill_total = 0;
-                }else {
-                    weekly_kill_total = wvwPKills.current - grabUserData[0].prev_count
-                    kills_from_last = current_count - grabUserData[0].wvwkills
-                }
-
-                let killWeeklySQL = "UPDATE users SET wvwkills = ?, current_count = ?, weekly_kill_total = ? WHERE account_id = ?"
-                // let killWeeklySQL = "UPDATE users SET wvwkills = ?, prev_count = ?, current_count = ?, weekly_kill_total = ? WHERE account_id = ?"
-                var values = [
-                    current_count,
-                    current_count,
-                    weekly_kill_total,
-                    account_id
-                ]
-
-
-                await pool.query(killWeeklySQL, values)
-
-                if (grabUserData[0].prev_count === null) {
-                    message.channel.send("You've been entered! Check the leaderboard at: http://thetopyak.com/ - keep typing !weekly to watch it grow!")
-                }else {
-                    message.channel.send("You're up to: " + weekly_kill_total + " kills this week! You've logged " + kills_from_last + " from the last update! Check the leaderboard at: http://thetopyak.com/")
-                }
-            }
-        } catch (e) {
-            message.channel.send('You need to verify for this or run !kills prior to using this functionality.');
-
-        }
-    }
-}
 
 async function resetLeaderboard(message){
 
