@@ -53,7 +53,7 @@ client.on("ready", () => {
 })
 
 
-
+//SEMI URGENT TO-DO: !UPDATE AND !PURGE ISSUE -> REMOVE "SET 1" TO UPDATE AND OUT OF PURGE
 
 
 //api calls
@@ -510,7 +510,7 @@ async function kills(message) {
   var _output = '';
   // Thwart user attempt to run the command outside kill count channel
   if (message.channel.id != chanKillCountsId) {
-      _output += 'Try again in the ' + message.guild.channels.find(channel => channel.name === "killcounts").toString() + ' channel.');
+      _output += 'Try again in the ' + message.guild.channels.find(channel => channel.name === "killcounts").toString() + ' channel.';
     } else {
       // obtain userId of one who used kill command
       let userId = message.author.id;
@@ -562,7 +562,7 @@ async function kills(message) {
         } catch (e) {
           _output += 'You need to be a verified user for this.';
       }
-      if (grabUserData[0].account_id === null) {
+      if (grabUserData[0].account_id === undefined) {
           _output += '\nWeekly stats are currently unavailable. Try again later after the server has updated.';
         } else {
           try {
@@ -597,7 +597,7 @@ async function kills(message) {
                   ];
                   await pool.query(killWeeklySQL, values);
                   if (grabUserData[0].prev_count === null) {
-                      _output += '\nYou\'ve been added to the leaderboard at http://thetopyak.com/ - this gets updated every time you run !kills.');
+                      _output += '\nYou\'ve been added to the leaderboard at http://thetopyak.com/ - this gets updated every time you run !kills.';
                     } else {
                       _output += '\nYou\'re up to ' + weekly_kill_total + ' kills for the week!';
                       //You\'ve logged ' + kills_from_last + ' from the last update! Check the leaderboard at http://thetopyak.com/ for updates.');
