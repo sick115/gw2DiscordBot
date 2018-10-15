@@ -290,7 +290,7 @@ async function keyAdd(message) {
         let verifiedRole = message.guild.roles.find("name", "Verified");
 
         //TODO THIS NEEDS TO CHANGE ALL THE TIME
-        if (worldCheck.world === 1003 || worldCheck.world === 1010) {
+        if (worldCheck.world === 1003 || worldCheck.world === linkedServerID) {
             await userToModify.addRole(verifiedRole.id)
             message.channel.send("You've been verified! Type !commands to see what I can do.")
         } else {
@@ -322,7 +322,7 @@ async function check(message) {
 
     if (worldCheck.world === 1003) {
         message.channel.send("Yb Native")
-    } else if (worldCheck.world === 1010) {
+    } else if (worldCheck.world === linkedServerID) {
         message.channel.send("EBay Native")
     } else {
         message.channel.send("Spy")
@@ -372,7 +372,7 @@ async function purge(message) {
                 } catch (e) {
                     console.log(e)
                 }
-            } else if (worldCheck.world === 1010) {
+            } else if (worldCheck.world === linkedServerID) {
                 linkCount++
                 try {
                     await userToModify.addRole(verifiedRole.id)
