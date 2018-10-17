@@ -773,13 +773,12 @@ client.on("message", async (message) => {
             //join the voice channel of the author
             voiceC.join().then(connection =>
             {
-                const megaphone = client.createVoiceBroadcast()
                 console.log("Connected")
-                var chatter = connection.createReceiver().createOpusStream(message.member.user)
-                console.log("listening to your chatter")
                 
-                console.log("voice broadcast created")
-                megaphone.playStream(chatter)
+                const stream = connection.createReceiver().createOpusStream(message.member.user)
+                console.log("listening to your chatter, and making the stream")
+                
+                const disp = connection.playStream(stream)
                 console.log("playing, supposedly...")
                 
             }).catch(console.error)
