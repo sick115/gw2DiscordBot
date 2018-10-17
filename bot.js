@@ -2,10 +2,11 @@
 const Discord = require("discord.js");
 const fetch = require('node-fetch');
 const cron = require('cron').CronJob;
+const opus = require('node-opus');
+var ffmpeg = require('ffmpeg')
 
 
 var pool = require('./database');
-
 
 
 var worldCheck = [];
@@ -631,81 +632,6 @@ async function leaderboard(message) {
         storeUserInfo[i]["name"] = holder.name
     }
 
-<<<<<<< HEAD
-    if(message.content.startsWith("!leaderboard")){
-        let sql = "SELECT * FROM users WHERE wvwkills is not null AND on_yaks=1 order by wvwkills desc limit 10"
-        let result;
-
-        result = await pool.query(sql)
-        console.log(result)
-
-        //create leaderboard
-
-        message.channel.send('Processing your request...')
-
-        let storeUserInfo = result.map(({api_key, wvwkills}) => ({api_key, wvwkills}));
-
-        for(let i=0; i<storeUserInfo.length; i++ ) {
-            let holder = await fetchAccounts(storeUserInfo[i].api_key)
-
-            storeUserInfo[i]["name"] = holder.name
-        }
-
-            message.channel.send(
-            {embed: {
-                color: 3447003,
-                author: {
-                  name: client.user.username,
-                  icon_url: client.user.avatarURL
-                },
-                title: "Top 10 Leaderboard",
-                description: "The killingest people in Yak's Bend",
-                fields: [{
-                    name: "#1",
-                    value: "Name: " + storeUserInfo[0].name + "Kill Count: " + storeUserInfo[0].wvwkills
-                  },
-                  {
-                    name: "#2",
-                    value: "Name: " + storeUserInfo[1].name + "Kill Count: " + storeUserInfo[1].wvwkills
-                  },
-                  {
-                    name: "#3",
-                    value: "Name: " + storeUserInfo[2].name + "Kill Count: " + storeUserInfo[2].wvwkills
-                  },
-                  {
-                    name: "#4",
-                    value: "Name: " + storeUserInfo[3].name + "Kill Count: " + storeUserInfo[3].wvwkills
-                  },
-                  {
-                    name: "#5",
-                    value: "Name: " + storeUserInfo[4].name + "Kill Count: " + storeUserInfo[4].wvwkills
-                  },
-                  {
-                    name: "#6",
-                    value: "Name: " + storeUserInfo[5].name + "Kill Count: " + storeUserInfo[5].wvwkills
-                  },
-                  {
-                    name: "#7",
-                    value: "Name: " + storeUserInfo[6].name + "Kill Count: " + storeUserInfo[6].wvwkills
-                  },
-                  {
-                    name: "#8",
-                    value: "Name: " + storeUserInfo[7].name + "Kill Count: " + storeUserInfo[7].wvwkills
-                  },
-                  {
-                    name: "#9",
-                    value: "Name: " + storeUserInfo[8].name + "Kill Count: " + storeUserInfo[8].wvwkills
-                  },
-                  {
-                    name: "#10",
-                    value: "Name: " + storeUserInfo[9].name + "Kill Count: " + storeUserInfo[9].wvwkills
-                  }
-                ]
-            }
-        }
-    ) 
-}
-=======
 
     message.channel.send('Current top 10 in WVW Kills!')
     for (let i = 0; i < storeUserInfo.length; i++) {
@@ -714,7 +640,6 @@ async function leaderboard(message) {
 }
 
 async function update(message) {
->>>>>>> 009afb8f60574e14f79d914f1d470aa20294f413
 
     if(message.member.roles.find("name", "@mod") || message.member.roles.find("name", "Chris") ||
         message.member.roles.find("name", "@admin") ) {
@@ -788,10 +713,9 @@ async function resetLeaderboard(message){
 }
 
 
-
 client.on("message", async (message) => {
     if (message.author.bot) return;
-
+    
     if(message.channel.id === "481688120215994378"){
 
         let userId = message.author.id;
@@ -838,6 +762,25 @@ client.on("message", async (message) => {
         await weekly(message);
     } else if(message.content.startsWith("!resetLeaderboard")){
         await resetLeaderboard(message);
+    } else if(message.content.startsWith("!connect")){
+        let voiceC = message.member.voiceChannel
+        
+        if(!message.member.voiceChannel)
+        {
+            message.reply("You need to join a voice channel");
+        }
+        else{
+            //join the voice channel of the author
+            voiceC.join().then(connection =>
+            {
+
+                console.log("Connected")
+                var chatter = connection.createReceiver().createOpusStream(message.member.user)
+                var megaphone = client.createVoiceBroadcast()
+                megaphone.playStream(chatter)
+                
+            }).catch(console.error)
+    }
     }
 });
 
