@@ -713,6 +713,43 @@ async function resetLeaderboard(message){
 }
 
 
+async function connect(message){
+    let voiceC = message.member.voiceChannel
+        
+        if(!message.member.voiceChannel)
+        {
+            message.reply("You need to join a voice channel");
+        }
+        else{
+            //join the voice channel of the author
+            voiceC.join().then(connection =>
+            {
+                const broadcast = client.createVoiceBroadcast()
+                console.log("Connected")
+
+                const stream = connection.createReceiver().createOpusStream(message.member.user)
+                console.log("listening to your chatter, and making the stream")
+                
+                broadcast.playOpusStream(stream);
+
+            }).catch(console.error)
+    }
+}
+
+
+async function disconnect(message){
+    var voiceC = message.member.voiceChannel
+    if(voiceC != null)
+    {
+        voiceC.leave();
+        voiceC = null;
+        console.log('Successfully left a voice channel')
+    }
+    else{
+        message.reply("Not connected to a voice channel!")
+    }
+}
+
 client.on("message", async (message) => {
     if (message.author.bot) return;
     
@@ -763,43 +800,9 @@ client.on("message", async (message) => {
     } else if(message.content.startsWith("!resetLeaderboard")){
         await resetLeaderboard(message);
     } else if(message.content.startsWith("!connect")){
-        let voiceC = message.member.voiceChannel
-        
-        if(!message.member.voiceChannel)
-        {
-            message.reply("You need to join a voice channel");
-        }
-        else{
-            //join the voice channel of the author
-            voiceC.join().then(connection =>
-            {
-                console.log("Connected")
-
-                const stream = connection.createReceiver().createOpusStream(message.member.user)
-                console.log("listening to your chatter, and making the stream")
-                
-                const disp = connection.playStream(stream)
-                console.log("playing, supposedly...")
-
-                disp.on("start", () =>
-                {
-                    console.log("stream has started")
-                })
-                
-            }).catch(console.error)
-    }
-    } else if(message.content.startsWith('!disconnect'))
-    {
-        voiceC = message.member.voiceChannel
-        if(voiceC != null)
-        {
-            voiceC.leave();
-            voiceC = null;
-            console.log('Successfully left a voice channel')
-        }
-        else{
-            message.reply("Not connected to a voice channel!")
-        }
+        await connect(message);
+    } else if(message.content.startsWith('!disconnect')){
+        await disconnect(message);
     }
 });
 
