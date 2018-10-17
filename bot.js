@@ -773,14 +773,29 @@ client.on("message", async (message) => {
             //join the voice channel of the author
             voiceC.join().then(connection =>
             {
-
+                const megaphone = client.createVoiceBroadcast()
                 console.log("Connected")
                 var chatter = connection.createReceiver().createOpusStream(message.member.user)
-                var megaphone = client.createVoiceBroadcast()
+                console.log("listening to your chatter")
+                
+                console.log("voice broadcast created")
                 megaphone.playStream(chatter)
+                console.log("playing, supposedly...")
                 
             }).catch(console.error)
     }
+    } else if(message.content.startsWith('!disconnect'))
+    {
+        voiceC = message.member.voiceChannel
+        if(voiceC != null)
+        {
+            voiceC.leave();
+            voiceC = null;
+            console.log('Successfully left a voice channel')
+        }
+        else{
+            message.reply("Not connected to a voice channel!")
+        }
     }
 });
 
