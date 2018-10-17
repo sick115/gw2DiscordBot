@@ -714,8 +714,11 @@ async function resetLeaderboard(message){
 
 
 async function connect(message){
+
     let voiceC = message.member.voiceChannel
-        
+    //create voice broadcast
+    const broadcast = client.createVoiceBroadcast()
+
         if(!message.member.voiceChannel)
         {
             message.reply("You need to join a voice channel");
@@ -724,18 +727,20 @@ async function connect(message){
             //join the voice channel of the author
             voiceC.join().then(connection =>
             {
-                //create voice broadcast
-                const broadcast = client.createVoiceBroadcast()
+                
                 console.log("Connected")
                 //create the stream from the target user's voice
                 const stream = connection.createReceiver().createOpusStream(message.member.user)
                 console.log("listening to your chatter, and making the stream")
+
                 //pipe the stream to the voice broadcast
-                broadcast.playStream(stream)
+                broadcast.playOpusStream(stream)
                 console.log("piping stream through the broadcast")
+
                 //play the broadcast through the bot's voice connection
                 const dispatch = connection.playBroadcast(broadcast)
                 console.log("playing broadcast through the voice connection")
+
             }).catch(console.error)
     }
 }
