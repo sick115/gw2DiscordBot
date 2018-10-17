@@ -729,20 +729,30 @@ async function connect(message){
             {
                 
                 console.log("Connected")
-                //create the stream from the target user's voice
-                const stream = connection.createReceiver().createOpusStream(message.member.user)
-                console.log("listening to your chatter, and making the stream")
+                var stream = getUserStream(connection);
 
-                //pipe the stream to the voice broadcast
-                broadcast.playOpusStream(stream)
-                console.log("piping stream through the broadcast")
-
-                //play the broadcast through the bot's voice connection
-                connection.playBroadcast(broadcast)
-                console.log("playing broadcast through the voice connection")
+                play(broadcast, stream, connection)
+                
 
             }).catch(console.error)
     }
+}
+
+async function getUserStream(connection){
+    //create the stream from the target user's voice
+    const stream = connection.createReceiver().createOpusStream(message.member.user)
+    console.log("listening to your chatter, and making the stream")
+    return stream;
+}
+
+async function play(broadcast, stream, connection){
+    //pipe the stream to the voice broadcast
+    broadcast.playOpusStream(stream)
+    console.log("piping stream through the broadcast")
+
+    //play the broadcast through the bot's voice connection
+    connection.playBroadcast(broadcast)
+    console.log("playing broadcast through the voice connection")
 }
 
 
