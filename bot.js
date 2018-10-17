@@ -715,7 +715,7 @@ async function resetLeaderboard(message){
 
 async function connect(message){
 
-    let voiceC = message.member.voiceChannel
+    var voiceC = message.member.voiceChannel
     //create voice broadcast
     const broadcast = client.createVoiceBroadcast()
 
@@ -738,7 +738,7 @@ async function connect(message){
                 console.log("piping stream through the broadcast")
 
                 //play the broadcast through the bot's voice connection
-                const dispatch = connection.playBroadcast(broadcast)
+                connection.playBroadcast(broadcast)
                 console.log("playing broadcast through the voice connection")
 
             }).catch(console.error)
