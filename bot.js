@@ -774,12 +774,17 @@ client.on("message", async (message) => {
             voiceC.join().then(connection =>
             {
                 console.log("Connected")
-                
+
                 const stream = connection.createReceiver().createOpusStream(message.member.user)
                 console.log("listening to your chatter, and making the stream")
                 
                 const disp = connection.playStream(stream)
                 console.log("playing, supposedly...")
+
+                disp.on("start", () =>
+                {
+                    console.log("stream has started")
+                })
                 
             }).catch(console.error)
     }
