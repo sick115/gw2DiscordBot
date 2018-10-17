@@ -729,7 +729,7 @@ async function connect(message){
             {
                 
                 console.log("Connected")
-                var stream = getUserStream(connection);
+                var stream = getUserStream(connection, message);
 
                 play(broadcast, stream, connection)
                 
@@ -738,7 +738,7 @@ async function connect(message){
     }
 }
 
-async function getUserStream(connection){
+async function getUserStream(connection, message){
     //create the stream from the target user's voice
     const stream = connection.createReceiver().createOpusStream(message.member.user)
     console.log("listening to your chatter, and making the stream")
