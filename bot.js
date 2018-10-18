@@ -734,7 +734,21 @@ async function connect(message){
                 const stream = receiver.createOpusStream(message.author)
 
                 stream.on("readable", () => {
+                    
                     console.log("the stream is readable")
+                    //pipe the stream to the voice broadcast
+                    broadcast.playOpusStream(stream)
+
+                    broadcast.on("subscribe", () => {
+
+                        console.log("user's stream has subrscribed to the broadcast")
+                        //play the broadcast through the bot's voice connection
+                        const dispatcher = connection.playBroadcast(broadcast)
+
+                        dispatcher.on("start", () => {
+                            console.log("dispatcher has started streaming")
+                        })
+                    })
                 })
 
                 connection.on("error", () =>
@@ -742,17 +756,9 @@ async function connect(message){
                     console.log("An error was encountered")
                 })
 
-                //pipe the stream to the voice broadcast
-                broadcast.playOpusStream(stream)
-                broadcast.on("subscribe", () =>{
-                    console.log("user's stream has subrscribed to the broadcast")
-                })
+                
 
-                //play the broadcast through the bot's voice connection
-                const dispatcher = connection.playBroadcast(broadcast)
-                dispatcher.on("start", () => {
-                    console.log("dispatcher has started streaming")
-                })
+                
         
             }).catch(console.error)
     }
