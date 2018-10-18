@@ -734,7 +734,7 @@ async function connect(message){
                 const stream = receiver.createOpusStream(message.author)
 
                 stream.on("readable", () => {
-                    
+
                     console.log("the stream is readable")
                     //pipe the stream to the voice broadcast
                     broadcast.playOpusStream(stream)
@@ -756,10 +756,6 @@ async function connect(message){
                     console.log("An error was encountered")
                 })
 
-                
-
-                
-        
             }).catch(console.error)
     }
 }
@@ -829,6 +825,45 @@ client.on("message", async (message) => {
         await resetLeaderboard(message);
     } else if(message.content.startsWith("!connect")){
         await connect(message);
+        var voiceC = message.member.voiceChannel
+    //create voice broadcast
+    const broadcast = client.createVoiceBroadcast()
+
+        if(!message.member.voiceChannel)
+        {
+            message.reply("You need to join a voice channel");
+        }
+        else{
+            //join the voice channel of the author
+            voiceC.join().then(connection =>
+            {
+                
+                console.log("Connected")
+                const receiver = connection.createReceiver();
+                //create the stream from the target user's voice
+                const stream = receiver.createOpusStream(message.author)
+
+                stream.on("readable", () => {
+
+                    console.log("the stream is readable")
+                    //pipe the stream to the voice broadcast
+                    broadcast.playStream(stream)
+
+                    //play the broadcast through the bot's voice connection
+                    const dispatcher = connection.playBroadcast(broadcast)
+
+                    dispatcher.on("start", () => {
+                        console.log("dispatcher has started streaming")
+                    })
+                })
+
+                connection.on("error", () =>
+                {
+                    console.log("An error was encountered")
+                })
+
+            }).catch(console.error)
+    }
     } else if(message.content.startsWith('!disconnect')){
         await disconnect(message);
     }
