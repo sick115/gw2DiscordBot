@@ -729,30 +729,33 @@ async function connect(message){
             {
                 
                 console.log("Connected")
-                
+                const receiver = connection.createReceiver();
                 //create the stream from the target user's voice
-                const stream = connection.createReceiver().createOpusStream(message.member.user)
-                console.log("listening to your chatter, and making the stream")
+                const stream = receiver.createOpusStream(message.author)
+
+                stream.on("readable", () => {
+                    console.lo("the stream is readable")
+                })
+
+                connection.on("error", () =>
+                {
+                    console.log("An error was encountered")
+                })
 
                 //pipe the stream to the voice broadcast
                 broadcast.playOpusStream(stream)
-                console.log("piping stream through the broadcast")
+                broadcast.on("subscribe", () =>{
+                    console.log("user's stream has subrscribed to the broadcast")
+                })
 
                 //play the broadcast through the bot's voice connection
-                connection.playBroadcast(broadcast)
-                console.log("playing broadcast through the voice connection")
-                
-
+                const dispatcher = connection.playBroadcast(broadcast)
+                dispatcher.on("start", () => {
+                    console.log("dispatcher has started streaming")
+                })
+        
             }).catch(console.error)
     }
-}
-
-async function getUserStream(connection, message){
-    
-}
-
-async function play(broadcast, stream, connection){
-    
 }
 
 
