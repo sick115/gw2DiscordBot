@@ -16,7 +16,7 @@ var linkCount = 0;
 var spyCount = 0;
 
 var yaksBendServerID = 1003;
-
+var linkedServerID = 1010
 // Channels
 var chanKillCountsId = 494353907804536832;
 
@@ -179,7 +179,9 @@ function modCommands(message) {
         "\n !purge " +
         "\n !update" +
         "\n !spyBlaster" +
-        "\n !resetLeaderboard");
+        "\n !resetLeaderboard" +
+        "\n !messageMates"
+    );
 }
 
 function users(message) {
@@ -282,7 +284,6 @@ async function keyAdd(message) {
         } catch (err) {
             message.author.send("Bad API key, try again!")
             throw new Error(err)
-
         }
 
 
@@ -290,9 +291,9 @@ async function keyAdd(message) {
         let verifiedRole = message.guild.roles.find("name", "Verified");
 
         //TODO THIS NEEDS TO CHANGE ALL THE TIME
-        if (worldCheck.world === 1003 || worldCheck.world === 1010) {
+        if (worldCheck.world === 1003 || worldCheck.world === linkedServerID) {
             await userToModify.addRole(verifiedRole.id)
-            message.channel.send("You've been verified!")
+            message.channel.send("You've been verified! Type !commands to see what I can do.")
         } else {
             message.channel.send("You do not belong to YB or Ebay")
         }
@@ -322,7 +323,7 @@ async function check(message) {
 
     if (worldCheck.world === 1003) {
         message.channel.send("Yb Native")
-    } else if (worldCheck.world === 1010) {
+    } else if (worldCheck.world === linkedServerID) {
         message.channel.send("EBay Native")
     } else {
         message.channel.send("Spy")
@@ -341,12 +342,7 @@ async function purge(message) {
             throw new Error(err)
         }
 
-
-        var roles = message.guild.roles
-
         // var verifiedRole = roles.find((item) => item.name === "Verified")
-
-
         message.channel.send("Purge process beginning... this will take a few minutes")
         for (let i = 0; i < result.length; i++) {
 
@@ -377,7 +373,7 @@ async function purge(message) {
                 } catch (e) {
                     console.log(e)
                 }
-            } else if (worldCheck.world === 1010) {
+            } else if (worldCheck.world === linkedServerID) {
                 linkCount++
                 try {
                     await userToModify.addRole(verifiedRole.id)
@@ -400,7 +396,6 @@ async function purge(message) {
                     if (verifiedRole != undefined) {
                         await userToModify.removeRole(verifiedRole.id)
                         await userToModify.addRole(spyRole.id)
-
                     }
 
                     //ping sql db
@@ -712,6 +707,37 @@ async function resetLeaderboard(message){
     }
 }
 
+async function messageServerMates(message){
+
+    if(message.member.roles.find("name", "@mod") || message.member.roles.find("name", "Chris") ||
+        message.member.roles.find("name", "@admin") ){
+
+        let sql = "SELECT user_id, api_key FROM users"
+        let result;
+
+        result = await pool.query(sql)
+
+        console.log(result)
+        message.channel.send('Give me a moment... messaging server mates')
+
+        for (let i = 0; i < result.length; i++) {
+            await fetchBulk(result[i].api_key)
+
+            if(worldCheck.world === linkedServerID){
+                let userId = result[i].user_id
+                let mate = message.guild.members.find('id',userId)
+                mate.send('Like what we do on YB? Msg DK or Chris for help on xfering! It was a pleasure playing with you.')
+            }
+        }
+
+        message.channel.send('Done!')
+
+    }else{
+        message.channel.send('You do not have access to this!')
+    }
+
+}
+
 
 async function connect(message){
 
@@ -818,10 +844,15 @@ client.on("message", async (message) => {
         await weekly(message);
     } else if(message.content.startsWith("!resetLeaderboard")){
         await resetLeaderboard(message);
+<<<<<<< HEAD
     } else if(message.content.startsWith("!connect")){
         await connect(message);
     } else if(message.content.startsWith('!disconnect')){
         await disconnect(message);
+=======
+    } else if(message.content.startsWith("!messageMates")) {
+        await messageServerMates(message);
+>>>>>>> 12eac5ce895095a66537a227d53d4bb6b8dc1ae4
     }
 });
 
