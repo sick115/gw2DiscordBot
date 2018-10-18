@@ -734,7 +734,7 @@ async function connect(message){
                 const stream = receiver.createOpusStream(message.author)
 
                 stream.on("readable", () => {
-                    console.lo("the stream is readable")
+                    console.log("the stream is readable")
                 })
 
                 connection.on("error", () =>
