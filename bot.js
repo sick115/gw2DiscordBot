@@ -717,7 +717,7 @@ async function connect(message){
 
     var voiceC = message.member.voiceChannel
     //create voice broadcast
-    const broadcast = client.createVoiceBroadcast()
+    //const broadcast = client.createVoiceBroadcast()
 
         if(!message.member.voiceChannel)
         {
@@ -737,13 +737,13 @@ async function connect(message){
 
                     console.log("the stream is readable")
                     //pipe the stream to the voice broadcast
-                    broadcast.playStream(stream)
+                    //broadcast.playOpusStream(stream)
 
                     //play the broadcast through the bot's voice connection
-                    const dispatcher = connection.playBroadcast(broadcast)
+                    const dispatcher = connection.playOpusStream(stream)
 
-                    dispatcher.on("start", () => {
-                        console.log("dispatcher has started streaming")
+                    dispatcher.on("error", (error) => {
+                        console.log("dispatcher has an error: " + error)
                     })
                 })
 
