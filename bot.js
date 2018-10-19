@@ -735,6 +735,11 @@ async function connect(message){
 
                 const stream = receiver.createOpusStream(message.member.user)
 
+                receiver.on("opus", () =>
+                {
+                    console.log("receiver is getting opus data")
+                })
+                
                 connection.playOpusStream(stream)
 
             }).catch(console.error)
