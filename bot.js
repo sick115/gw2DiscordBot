@@ -716,8 +716,8 @@ async function resetLeaderboard(message){
 async function connect(message){
 
     var voiceC = message.member.voiceChannel
-    //create voice broadcast
-    //const broadcast = client.createVoiceBroadcast()
+        //create voice broadcast
+        //const broadcast = client.createVoiceBroadcast()
 
         if(!message.member.voiceChannel)
         {
@@ -729,29 +729,13 @@ async function connect(message){
             {
                 
                 console.log("Connected")
+
                 const receiver = connection.createReceiver();
                 //create the stream from the target user's voice
-                const stream = receiver.createOpusStream(message.author)
+
+                const stream = receiver.createOpusStream(message.member.user)
+
                 connection.playOpusStream(stream)
-
-                stream.on("readable", () => {
-
-                    console.log("the stream is readable")
-                    //pipe the stream to the voice broadcast
-                    //broadcast.playOpusStream(stream)
-
-                    //play the broadcast through the bot's voice connection
-                    
-
-                    //dispatcher.on("error", (error) => {
-                    //    console.log("dispatcher has an error: " + error)
-                    //})
-                })
-
-                connection.on("error", () =>
-                {
-                    console.log("An error was encountered")
-                })
 
             }).catch(console.error)
     }
