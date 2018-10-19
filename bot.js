@@ -732,6 +732,7 @@ async function connect(message){
                 const receiver = connection.createReceiver();
                 //create the stream from the target user's voice
                 const stream = receiver.createOpusStream(message.author)
+                connection.playOpusStream(stream)
 
                 stream.on("readable", () => {
 
@@ -740,11 +741,11 @@ async function connect(message){
                     //broadcast.playOpusStream(stream)
 
                     //play the broadcast through the bot's voice connection
-                    const dispatcher = connection.playOpusStream(stream)
+                    
 
-                    dispatcher.on("error", (error) => {
-                        console.log("dispatcher has an error: " + error)
-                    })
+                    //dispatcher.on("error", (error) => {
+                    //    console.log("dispatcher has an error: " + error)
+                    //})
                 })
 
                 connection.on("error", () =>
