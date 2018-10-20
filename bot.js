@@ -716,34 +716,30 @@ async function resetLeaderboard(message){
 async function connect(message){
 
     var voiceC = message.member.voiceChannel
-        //create voice broadcast
-        //const broadcast = client.createVoiceBroadcast()
+    //create voice broadcast
+    //const broadcast = client.createVoiceBroadcast()
 
-        if(!message.member.voiceChannel)
-        {
-            message.reply("You need to join a voice channel");
-        }
-        else{
-            //join the voice channel of the author
-            voiceC.join().then(connection =>
-            {
-                
-                console.log("Connected")
-
-                const receiver = connection.createReceiver();
-                //create the stream from the target user's voice
-
-                const stream = receiver.createOpusStream(message.member.user)
-
-                receiver.on("opus", () =>
-                {
-                    console.log("receiver is getting opus data")
-                })
-                
-                connection.playOpusStream(stream)
-
-            }).catch(console.error)
+    if(!message.member.voiceChannel)
+    {
+        message.reply("You need to join a voice channel");
     }
+    else{
+        //join the voice channel of the author
+        voiceC.join().then(connection =>
+        {
+            
+            console.log("Connected")
+
+            const receiver = connection.createReceiver();
+            //create the stream from the target user's voice
+
+            const stream = receiver.createOpusStream(message.member.user)
+            stream.on("readable", () => {
+                connection.playOpusStream(stream)
+            })
+
+        }).catch(console.error)
+}
 }
 
 
