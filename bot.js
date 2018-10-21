@@ -3,6 +3,7 @@ const Discord = require("discord.js");
 const fetch = require('node-fetch');
 const cron = require('cron').CronJob;
 const opus = require('node-opus');
+var bot2 = require("./bot2")
 var ffmpeg = require('ffmpeg')
 
 
@@ -714,7 +715,6 @@ async function resetLeaderboard(message){
 
 
 async function connect(message){
-
     var voiceC = message.member.voiceChannel
     //create voice broadcast
     //const broadcast = client.createVoiceBroadcast()
@@ -727,21 +727,18 @@ async function connect(message){
         //join the voice channel of the author
         voiceC.join().then(connection =>
         {
-            
             console.log("Connected")
 
             const receiver = connection.createReceiver();
             //create the stream from the target user's voice
-
+            
             const stream = receiver.createOpusStream(message.member.user)
-            stream.on("readable", () => {
-                console.log("Stream is readable")
-                connection.playOpusStream(stream)
-                
-            })
+
+            speakerbot = new bot2(stream, voiceC)
 
         }).catch(console.error)
 }
+    
 }
 
 
@@ -809,36 +806,7 @@ client.on("message", async (message) => {
         await resetLeaderboard(message);
     } else if(message.content.startsWith("!connect")){
         await connect(message);
-        var voiceC = message.member.voiceChannel
-    //create voice broadcast
-    //const broadcast = client.createVoiceBroadcast()
-
-    if(!message.member.voiceChannel)
-    {
-        message.reply("You need to join a voice channel");
-    }
-    else{
-        //join the voice channel of the author
-        voiceC.join().then(connection =>
-        {
-            console.log("Connected")
-
-            const receiver = connection.createReceiver();
-            //create the stream from the target user's voice
-            
-            const stream = receiver.createOpusStream(message.member.user)
-            receiver.on("warn", (reason, message) =>
-            {
-                console.log("REASON: " + reason + "MESSAGE:" + message);
-            })
-            stream.on("readable", () => {
-
-                console.log("Stream is readable")
-                const dispatch = connection.playStream(stream)
-                
-            })
-        }).catch(console.error)
-}
+        
     } else if(message.content.startsWith('!disconnect')){
         await disconnect(message);
     }
