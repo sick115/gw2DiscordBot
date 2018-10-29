@@ -734,7 +734,7 @@ async function connect(message){
 
                 console.log("Connected")
 
-                //This creates the receiver that will grab the user's voice stream
+                //This creates the receiver that will grab the user's voice data
                 const receiver = connection.createReceiver();
                 
                 //Grab the user's voice data and create the Opus stream.
