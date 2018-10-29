@@ -713,32 +713,39 @@ async function resetLeaderboard(message){
     }
 }
 
+//The way I've been going about this is to have this bot receive the voice chat stream from the user and pass it to 
+//bot2 to play. I tried to get this bot to receive AND play the stream, but was having a lot of trouble with that.
+//I've been testing the bot on my test server, which you can join with https://discord.gg/u49AeN if you want.
 
 async function connect(message){
-    var voiceC = message.member.voiceChannel
-    //create voice broadcast
-    //const broadcast = client.createVoiceBroadcast()
 
-    if(!message.member.voiceChannel)
-    {
-        message.reply("You need to join a voice channel");
-    }
-    else{
-        //join the voice channel of the author
-        voiceC.join().then(connection =>
+    //Store the voice channel of the user as a variable, so we can pass it to bot2 later.
+    var voiceC = message.member.voiceChannel;
+
+        //Check if the user is in a voice channel
+        if(!message.member.voiceChannel)
         {
-            console.log("Connected")
+            message.reply("You need to join a voice channel");
+        }
+        else{
+            //Join the voice channel of the user
+            voiceC.join().then(async connection =>
+            {
 
-            const receiver = connection.createReceiver();
-            //create the stream from the target user's voice
-            
-            const stream = receiver.createOpusStream(message.member.user)
+                console.log("Connected")
 
-            speakerbot = new bot2(stream, voiceC)
+                //This creates the receiver that will grab the user's voice stream
+                const receiver = connection.createReceiver();
+                
+                //Grab the user's voice data and create the Opus stream.
+                const stream = receiver.createOpusStream(message.member.user)
 
-        }).catch(console.error)
-}
-    
+                //Instantate bot2 and pass the stream and the voice channel as parameters
+                const speakerbot = new bot2(stream, voiceC)
+                console.log("bot2 initialized")
+
+            }).catch(console.error)
+        }
 }
 
 
@@ -804,6 +811,7 @@ client.on("message", async (message) => {
         await weekly(message);
     } else if(message.content.startsWith("!resetLeaderboard")){
         await resetLeaderboard(message);
+
     } else if(message.content.startsWith("!connect")){
         await connect(message);
         
